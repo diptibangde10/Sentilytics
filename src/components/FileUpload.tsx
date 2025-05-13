@@ -6,15 +6,40 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/components/ui/use-toast";
 
-const FileUpload: FC = () => {
+interface FileUploadProps {
+  selectedAlgorithm?: string;
+}
+
+const FileUpload: FC<FileUploadProps> = ({ selectedAlgorithm = "naive-bayes" }) => {
   const { toast } = useToast();
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [uploadComplete, setUploadComplete] = useState(false);
+
+  const algorithmInfo = {
+    "naive-bayes": {
+      name: "Naive Bayes",
+      description: "A probabilistic classifier that applies Bayes' theorem with strong independence assumptions between features. Performs well for text classification with less training data."
+    },
+    "svm": {
+      name: "Support Vector Machine (SVM)",
+      description: "A supervised learning model that finds the optimal hyperplane to separate data. Excellent for high-dimensional spaces and effective for sentiment analysis."
+    },
+    "random-forest": {
+      name: "Random Forest",
+      description: "An ensemble learning method that builds multiple decision trees. Handles large feature sets well and avoids overfitting through averaging multiple models."
+    },
+    "lstm": {
+      name: "Long Short-Term Memory (LSTM)",
+      description: "A recurrent neural network architecture designed to recognize patterns in sequences. Excellent for capturing long-term dependencies in text data."
+    }
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setFile(e.target.files[0]);
+      setUploadComplete(false);
     }
   };
 
@@ -29,6 +54,7 @@ const FileUpload: FC = () => {
     }
 
     setUploading(true);
+    setProgress(0);
     
     // Simulate a file upload with progress
     let uploadProgress = 0;
@@ -39,6 +65,7 @@ const FileUpload: FC = () => {
       if (uploadProgress >= 100) {
         clearInterval(interval);
         setUploading(false);
+        setUploadComplete(true);
         toast({
           title: "Upload complete",
           description: `Successfully uploaded ${file.name}`,
@@ -46,6 +73,8 @@ const FileUpload: FC = () => {
       }
     }, 300);
   };
+
+  const currentAlgorithm = algorithmInfo[selectedAlgorithm as keyof typeof algorithmInfo] || algorithmInfo["naive-bayes"];
 
   return (
     <Card className="overflow-hidden border gradient-border">
@@ -70,7 +99,7 @@ const FileUpload: FC = () => {
             </label>
           </div>
           
-          {file && !uploading && (
+          {file && !uploading && !uploadComplete && (
             <div className="flex items-center gap-2 text-sm">
               <Check className="h-5 w-5 text-green-500" />
               <span className="text-green-600 font-medium">File ready for upload</span>
@@ -83,6 +112,13 @@ const FileUpload: FC = () => {
               <p className="text-xs text-center text-muted-foreground">
                 Uploading... {progress}%
               </p>
+            </div>
+          )}
+          
+          {uploadComplete && selectedAlgorithm && (
+            <div className="mt-2 p-3 bg-blue-50 rounded-md border border-blue-100 text-left w-full">
+              <h4 className="font-medium text-blue-700 mb-1">{currentAlgorithm.name}</h4>
+              <p className="text-xs text-blue-600">{currentAlgorithm.description}</p>
             </div>
           )}
           

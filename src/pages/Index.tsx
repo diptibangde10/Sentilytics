@@ -22,7 +22,7 @@ const Index = () => {
             <div className="grid gap-8 md:grid-cols-3">
               <div className="md:col-span-1">
                 <div className="animate-fade-in" style={{ animationDuration: '0.6s' }}>
-                  <FileUpload />
+                  <FileUpload selectedAlgorithm={selectedAlgorithm} />
                 </div>
               </div>
               <div className="md:col-span-2">

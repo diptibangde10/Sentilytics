@@ -23,7 +23,7 @@ const Header: FC<HeaderProps> = ({ activeTab, setActiveTab, className }) => {
   return (
     <header className={cn("w-full bg-background shadow-sm z-10", className)}>
       <div className="container mx-auto px-4 py-4">
-        <h1 className="text-2xl font-bold text-primary mb-6">Sentiment Analysis Platform</h1>
+        <h1 className="text-2xl font-bold text-blue-600 mb-6">Sentiment Analysis Platform</h1>
         
         <div className="flex overflow-x-auto pb-2 gap-1">
           {tabs.map(tab => (
