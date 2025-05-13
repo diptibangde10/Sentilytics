@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import Header from "@/components/Header";
 import FileUpload from "@/components/FileUpload";
@@ -17,48 +18,78 @@ const Index = () => {
     switch (activeTab) {
       case "dashboard":
         return (
-          <div className="space-y-6">
-            <div className="grid gap-6 md:grid-cols-3">
+          <div className="space-y-8">
+            <div className="grid gap-8 md:grid-cols-3">
               <div className="md:col-span-1">
-                <FileUpload />
+                <div className="animate-fade-in" style={{ animationDuration: '0.6s' }}>
+                  <FileUpload />
+                </div>
               </div>
               <div className="md:col-span-2">
-                <AlgorithmSelector 
-                  selectedAlgorithm={selectedAlgorithm}
-                  onSelectAlgorithm={setSelectedAlgorithm}
-                />
+                <div className="animate-fade-in" style={{ animationDuration: '0.8s' }}>
+                  <AlgorithmSelector 
+                    selectedAlgorithm={selectedAlgorithm}
+                    onSelectAlgorithm={setSelectedAlgorithm}
+                  />
+                </div>
               </div>
             </div>
-            <SentimentDashboard />
+            <div className="animate-fade-in" style={{ animationDuration: '1s' }}>
+              <SentimentDashboard />
+            </div>
           </div>
         );
       case "algorithms":
         return (
-          <div className="space-y-6">
-            <AlgorithmSelector 
-              selectedAlgorithm={selectedAlgorithm}
-              onSelectAlgorithm={setSelectedAlgorithm}
-            />
-            <SentimentDashboard />
+          <div className="space-y-8">
+            <div className="animate-fade-in" style={{ animationDuration: '0.6s' }}>
+              <AlgorithmSelector 
+                selectedAlgorithm={selectedAlgorithm}
+                onSelectAlgorithm={setSelectedAlgorithm}
+              />
+            </div>
+            <div className="animate-fade-in" style={{ animationDuration: '0.8s' }}>
+              <SentimentDashboard />
+            </div>
           </div>
         );
       case "aspect-based":
-        return <AspectAnalysis />;
+        return (
+          <div className="animate-fade-in" style={{ animationDuration: '0.6s' }}>
+            <AspectAnalysis />
+          </div>
+        );
       case "chatbot":
-        return <Chatbot />;
+        return (
+          <div className="animate-fade-in" style={{ animationDuration: '0.6s' }}>
+            <Chatbot />
+          </div>
+        );
       case "time-series":
-        return <TimeSeriesAnalysis />;
+        return (
+          <div className="animate-fade-in" style={{ animationDuration: '0.6s' }}>
+            <TimeSeriesAnalysis />
+          </div>
+        );
       case "recommendations":
-        return <Recommendations />;
+        return (
+          <div className="animate-fade-in" style={{ animationDuration: '0.6s' }}>
+            <Recommendations />
+          </div>
+        );
       default:
-        return <SentimentDashboard />;
+        return (
+          <div className="animate-fade-in" style={{ animationDuration: '0.6s' }}>
+            <SentimentDashboard />
+          </div>
+        );
     }
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-background to-background/95">
       <Header activeTab={activeTab} setActiveTab={setActiveTab} />
-      <main className="container mx-auto px-4 py-6">
+      <main className="container mx-auto px-4 py-8">
         {renderContent()}
       </main>
     </div>

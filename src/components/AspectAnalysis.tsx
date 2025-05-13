@@ -55,10 +55,10 @@ const AspectAnalysis: FC<AspectAnalysisProps> = ({ data }) => {
   };
 
   return (
-    <div className="grid gap-4">
+    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {aspectData.map((aspect, index) => (
-        <Card key={index} className="overflow-hidden">
-          <CardHeader className="bg-muted/50 pb-2">
+        <Card key={index} className="overflow-hidden hover-scale border gradient-border">
+          <CardHeader className="bg-gradient-to-r from-primary/10 via-secondary/5 to-accent/10 pb-2">
             <div className="flex justify-between items-center">
               <CardTitle className="text-lg font-medium flex items-center gap-2">
                 {getSentimentIcon(aspect.positive, aspect.negative)}
@@ -75,7 +75,12 @@ const AspectAnalysis: FC<AspectAnalysisProps> = ({ data }) => {
                 </div>
                 <span className="text-sm font-medium">{aspect.positive}%</span>
               </div>
-              <Progress value={aspect.positive} className="h-2 bg-muted" />
+              <Progress value={aspect.positive} className="h-2 bg-muted" 
+                style={{
+                  background: 'linear-gradient(to right, rgba(74, 222, 128, 0.2), rgba(74, 222, 128, 0.05))',
+                  color: 'rgb(74, 222, 128)'
+                }}
+              />
 
               <div className="flex justify-between items-center">
                 <div className="flex items-center">
@@ -84,7 +89,12 @@ const AspectAnalysis: FC<AspectAnalysisProps> = ({ data }) => {
                 </div>
                 <span className="text-sm font-medium">{aspect.neutral}%</span>
               </div>
-              <Progress value={aspect.neutral} className="h-2 bg-muted" />
+              <Progress value={aspect.neutral} className="h-2 bg-muted" 
+                style={{
+                  background: 'linear-gradient(to right, rgba(251, 191, 36, 0.2), rgba(251, 191, 36, 0.05))',
+                  color: 'rgb(251, 191, 36)'
+                }}
+              />
 
               <div className="flex justify-between items-center">
                 <div className="flex items-center">
@@ -93,7 +103,12 @@ const AspectAnalysis: FC<AspectAnalysisProps> = ({ data }) => {
                 </div>
                 <span className="text-sm font-medium">{aspect.negative}%</span>
               </div>
-              <Progress value={aspect.negative} className="h-2 bg-muted" />
+              <Progress value={aspect.negative} className="h-2 bg-muted" 
+                style={{
+                  background: 'linear-gradient(to right, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.05))',
+                  color: 'rgb(239, 68, 68)'
+                }}
+              />
 
               <div className="pt-2">
                 <p className="text-sm font-medium mb-1">Common Keywords:</p>
@@ -101,7 +116,7 @@ const AspectAnalysis: FC<AspectAnalysisProps> = ({ data }) => {
                   {aspect.keywords.map((keyword, idx) => (
                     <span
                       key={idx}
-                      className="inline-flex items-center rounded-full bg-muted px-2 py-1 text-xs"
+                      className="inline-flex items-center rounded-full bg-primary/10 text-primary px-2 py-1 text-xs"
                     >
                       {keyword}
                     </span>

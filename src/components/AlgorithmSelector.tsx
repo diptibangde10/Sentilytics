@@ -1,6 +1,6 @@
 
 import { FC } from "react";
-import { Check } from "lucide-react";
+import { Check, Sparkles } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -26,22 +26,26 @@ const AlgorithmSelector: FC<AlgorithmSelectorProps> = ({
     { 
       id: "naive-bayes", 
       name: "Naive Bayes", 
-      description: "Fast classification for text data with probabilistic approach" 
+      description: "Fast classification for text data with probabilistic approach",
+      color: "from-blue-500 to-blue-600"
     },
     { 
       id: "svm", 
       name: "Support Vector Machine (SVM)", 
-      description: "Powerful classifier for high-dimensional spaces" 
+      description: "Powerful classifier for high-dimensional spaces",
+      color: "from-purple-500 to-purple-600"
     },
     { 
       id: "random-forest", 
       name: "Random Forest", 
-      description: "Ensemble method using multiple decision trees" 
+      description: "Ensemble method using multiple decision trees",
+      color: "from-green-500 to-green-600"
     },
     { 
       id: "lstm", 
       name: "Long Short-Term Memory (LSTM)", 
-      description: "Deep learning approach for sequential data" 
+      description: "Deep learning approach for sequential data",
+      color: "from-amber-500 to-amber-600"
     },
   ];
 
@@ -95,65 +99,86 @@ const AlgorithmSelector: FC<AlgorithmSelectorProps> = ({
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Select Algorithms</CardTitle>
+    <Card className="overflow-hidden gradient-border">
+      <CardHeader className="bg-gradient-to-r from-primary/10 to-secondary/10 pb-4">
+        <CardTitle className="flex items-center gap-2 text-xl">
+          <Sparkles className="h-5 w-5 text-primary" />
+          Select Algorithms
+        </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-6">
         <div className="grid gap-4">
-          {algorithms.map((algorithm) => (
-            <div key={algorithm.id} className="flex items-center space-x-2">
-              <Checkbox 
-                id={algorithm.id} 
-                checked={selectedAlgorithms.includes(algorithm.id)}
-                onCheckedChange={() => handleAlgorithmToggle(algorithm.id)}
-              />
-              <Label
-                htmlFor={algorithm.id}
-                className="flex flex-col sm:flex-row sm:items-center justify-between w-full rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground cursor-pointer"
-              >
-                <div className="flex flex-col space-y-1">
-                  <span className="font-medium">{algorithm.name}</span>
-                  <span className="text-xs text-muted-foreground">{algorithm.description}</span>
-                </div>
-                {selectedAlgorithms.includes(algorithm.id) && (
-                  <Check className="h-5 w-5 text-primary" />
-                )}
-              </Label>
-            </div>
-          ))}
+          {algorithms.map((algorithm) => {
+            const isSelected = selectedAlgorithms.includes(algorithm.id);
+            
+            return (
+              <div key={algorithm.id} className="flex items-center space-x-3">
+                <Checkbox 
+                  id={algorithm.id} 
+                  checked={isSelected}
+                  onCheckedChange={() => handleAlgorithmToggle(algorithm.id)}
+                  className={isSelected ? "border-primary text-primary" : ""}
+                />
+                <Label
+                  htmlFor={algorithm.id}
+                  className={`flex flex-col sm:flex-row sm:items-center justify-between w-full rounded-lg 
+                    border-2 ${isSelected ? 'border-primary/30' : 'border-muted'} 
+                    bg-card p-4 hover:bg-accent/10 hover:border-accent/30 cursor-pointer
+                    transition-all duration-200 ${isSelected ? 'shadow-md' : ''}`}
+                >
+                  <div className="flex flex-col space-y-1">
+                    <span className="font-medium">{algorithm.name}</span>
+                    <span className="text-xs text-muted-foreground">{algorithm.description}</span>
+                  </div>
+                  {isSelected && (
+                    <div className={`h-6 w-6 rounded-full bg-gradient-to-r ${algorithm.color} flex items-center justify-center`}>
+                      <Check className="h-4 w-4 text-white" />
+                    </div>
+                  )}
+                </Label>
+              </div>
+            );
+          })}
         </div>
       </CardContent>
-      <CardFooter className="flex-col space-y-4">
+      <CardFooter className="flex-col space-y-4 p-6 bg-muted/30">
         <Button 
           onClick={handleAnalyze} 
-          className="w-full"
+          className="w-full bg-gradient-to-r from-primary to-secondary hover:opacity-90"
           disabled={isAnalyzing || selectedAlgorithms.length === 0}
         >
-          {isAnalyzing ? "Analyzing..." : "Run Analysis"}
+          {isAnalyzing ? (
+            <span className="flex items-center gap-2">
+              <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Analyzing...
+            </span>
+          ) : "Run Analysis"}
         </Button>
         
         {Object.keys(results).length > 0 && (
-          <div className="w-full mt-4">
-            <h3 className="font-medium text-lg mb-3">Algorithm Results</h3>
+          <div className="w-full mt-4 animate-fade-in">
+            <h3 className="font-medium text-lg mb-3 border-b pb-2">Algorithm Results</h3>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               {Object.entries(results).map(([algorithmId, metrics]) => {
                 const algorithm = algorithms.find(a => a.id === algorithmId);
                 return (
-                  <Card key={algorithmId} className="p-4 bg-muted/30">
-                    <h4 className="font-medium">{algorithm?.name}</h4>
+                  <Card key={algorithmId} className="p-4 hover-scale border border-primary/20">
+                    <h4 className="font-medium text-primary">{algorithm?.name}</h4>
                     <dl className="mt-2 space-y-1 text-sm">
                       <div className="flex justify-between">
                         <dt>Accuracy</dt>
-                        <dd className="font-mono">{metrics.accuracy.toFixed(2)}</dd>
+                        <dd className="font-mono font-medium">{metrics.accuracy.toFixed(2)}</dd>
                       </div>
                       <div className="flex justify-between">
                         <dt>Precision</dt>
-                        <dd className="font-mono">{metrics.precision.toFixed(2)}</dd>
+                        <dd className="font-mono font-medium">{metrics.precision.toFixed(2)}</dd>
                       </div>
                       <div className="flex justify-between">
                         <dt>Recall</dt>
-                        <dd className="font-mono">{metrics.recall.toFixed(2)}</dd>
+                        <dd className="font-mono font-medium">{metrics.recall.toFixed(2)}</dd>
                       </div>
                     </dl>
                   </Card>
