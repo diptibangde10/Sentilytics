@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import Header from "@/components/Header";
 import FileUpload from "@/components/FileUpload";
@@ -24,14 +23,10 @@ const Index = () => {
                 <FileUpload />
               </div>
               <div className="md:col-span-2">
-                <Card>
-                  <CardContent className="pt-6">
-                    <AlgorithmSelector 
-                      selectedAlgorithm={selectedAlgorithm}
-                      onSelectAlgorithm={setSelectedAlgorithm}
-                    />
-                  </CardContent>
-                </Card>
+                <AlgorithmSelector 
+                  selectedAlgorithm={selectedAlgorithm}
+                  onSelectAlgorithm={setSelectedAlgorithm}
+                />
               </div>
             </div>
             <SentimentDashboard />
@@ -40,14 +35,10 @@ const Index = () => {
       case "algorithms":
         return (
           <div className="space-y-6">
-            <Card>
-              <CardContent className="pt-6">
-                <AlgorithmSelector 
-                  selectedAlgorithm={selectedAlgorithm}
-                  onSelectAlgorithm={setSelectedAlgorithm}
-                />
-              </CardContent>
-            </Card>
+            <AlgorithmSelector 
+              selectedAlgorithm={selectedAlgorithm}
+              onSelectAlgorithm={setSelectedAlgorithm}
+            />
             <SentimentDashboard />
           </div>
         );
