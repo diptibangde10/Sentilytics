@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -62,7 +61,22 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+        pink: {
+          DEFAULT: 'hsl(327, 73%, 62%)',
+          light: 'hsl(327, 73%, 85%)',
+          dark: 'hsl(327, 73%, 45%)'
+        },
+        blue: {
+          DEFAULT: 'hsl(199, 89%, 48%)',
+          light: 'hsl(199, 89%, 70%)',
+          dark: 'hsl(199, 89%, 35%)'
+        },
+        yellow: {
+          DEFAULT: 'hsl(49, 95%, 70%)',
+          light: 'hsl(49, 95%, 85%)',
+          dark: 'hsl(49, 85%, 60%)'
+        }
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -98,6 +112,15 @@ export default {
 					'0%, 100%': { opacity: '1' },
 					'50%': { opacity: '0.5' },
 				},
+				'rainbow': {
+					'0%': { 'background-position': '0% 50%' },
+					'50%': { 'background-position': '100% 50%' },
+					'100%': { 'background-position': '0% 50%' }
+				},
+				'bounce-soft': {
+					'0%, 100%': { transform: 'translateY(0)' },
+					'50%': { transform: 'translateY(-5px)' }
+				},
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
@@ -105,11 +128,17 @@ export default {
 				'fade-in': 'fade-in 0.3s ease-out',
 				'slide-up': 'slide-up 0.3s ease-out',
 				'pulse-slow': 'pulse 3s ease-in-out infinite',
+				'rainbow': 'rainbow 5s ease infinite',
+				'bounce-soft': 'bounce-soft 2s ease-in-out infinite',
 			},
 			backgroundImage: {
 				'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
 				'gradient-primary': 'linear-gradient(to right, hsl(var(--primary)), hsl(var(--secondary)))',
 				'gradient-card': 'linear-gradient(to bottom right, hsl(var(--card)), hsl(var(--background)))',
+				'gradient-pink-blue': 'linear-gradient(to right, hsl(327, 73%, 62%), hsl(199, 89%, 48%))',
+				'gradient-blue-yellow': 'linear-gradient(to right, hsl(199, 89%, 48%), hsl(49, 95%, 70%))',
+				'gradient-pink-yellow': 'linear-gradient(to right, hsl(327, 73%, 62%), hsl(49, 95%, 70%))',
+				'gradient-tricolor': 'linear-gradient(to right, hsl(327, 73%, 62%), hsl(199, 89%, 48%), hsl(49, 95%, 70%))',
 			},
 		}
 	},
