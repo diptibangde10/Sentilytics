@@ -21,18 +21,31 @@ const Header: FC<HeaderProps> = ({ activeTab, setActiveTab, className }) => {
   ];
 
   return (
-    <header className={cn("w-full bg-background shadow-sm z-10", className)}>
-      <div className="container mx-auto px-4 py-4">
-        <h1 className="text-2xl font-bold text-blue-600 mb-6">Sentiment Analysis Platform</h1>
+    <header className={cn("fitapp-header text-white shadow-lg z-10", className)}>
+      <div className="container mx-auto px-4 py-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-4">
+          <h1 className="text-3xl font-bold text-white">Sentiment Analysis Platform</h1>
+          
+          <div className="flex items-center mt-4 md:mt-0">
+            <Button variant="outline" className="bg-white/10 text-white border-white/20 hover:bg-white/20 mr-2">
+              Sign In
+            </Button>
+            <Button variant="default" className="bg-accent text-primary-foreground hover:bg-accent/90">
+              Get Started
+            </Button>
+          </div>
+        </div>
         
-        <div className="flex overflow-x-auto pb-2 gap-1">
+        <div className="flex overflow-x-auto pb-2 gap-2 mt-4">
           {tabs.map(tab => (
             <Button
               key={tab.id}
               variant={activeTab === tab.id ? "default" : "ghost"}
               className={cn(
-                "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium",
-                activeTab === tab.id ? "bg-primary text-primary-foreground" : "text-muted-foreground"
+                "flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium",
+                activeTab === tab.id 
+                  ? "bg-white text-primary" 
+                  : "bg-transparent text-white/90 hover:bg-white/10"
               )}
               onClick={() => setActiveTab(tab.id)}
             >
