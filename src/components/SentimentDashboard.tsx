@@ -33,6 +33,11 @@ const SentimentDashboard: FC<SentimentDashboardProps> = ({ data }) => {
     ],
   };
 
+  // Make sure all array properties exist to prevent map errors
+  const positiveAspects = sentimentData?.mostPositiveAspects || [];
+  const negativeAspects = sentimentData?.mostNegativeAspects || [];
+  const timeSeriesData = sentimentData?.overTime || [];
+
   const getColor = (type: string) => {
     switch (type) {
       case 'positive':
@@ -88,7 +93,7 @@ const SentimentDashboard: FC<SentimentDashboardProps> = ({ data }) => {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {sentimentData.mostPositiveAspects.map((aspect: string, index: number) => (
+            {positiveAspects.map((aspect: string, index: number) => (
               <div key={index} className="flex items-center">
                 <TrendingUp className="mr-2 h-4 w-4 text-green-500" />
                 <span>{aspect}</span>
@@ -104,7 +109,7 @@ const SentimentDashboard: FC<SentimentDashboardProps> = ({ data }) => {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {sentimentData.mostNegativeAspects.map((aspect: string, index: number) => (
+            {negativeAspects.map((aspect: string, index: number) => (
               <div key={index} className="flex items-center">
                 <TrendingDown className="mr-2 h-4 w-4 text-red-500" />
                 <span>{aspect}</span>
@@ -121,7 +126,7 @@ const SentimentDashboard: FC<SentimentDashboardProps> = ({ data }) => {
         <CardContent className="h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
-              data={sentimentData.overTime}
+              data={timeSeriesData}
               margin={{ top: 20, right: 30, left: 0, bottom: 0 }}
               stackOffset="expand"
               barGap={0}
