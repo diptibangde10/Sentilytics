@@ -1,4 +1,3 @@
-
 import { FC } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
@@ -6,9 +5,10 @@ import { ThumbsUp, Star, TrendingUp } from "lucide-react";
 
 interface RecommendationsProps {
   data?: any;
+  uploadComplete?: boolean;
 }
 
-const Recommendations: FC<RecommendationsProps> = ({ data }) => {
+const Recommendations: FC<RecommendationsProps> = ({ data, uploadComplete = false }) => {
   // Sample recommendations data
   const recommendationsData = data || {
     similarProducts: [

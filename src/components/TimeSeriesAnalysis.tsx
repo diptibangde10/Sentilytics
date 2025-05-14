@@ -1,4 +1,3 @@
-
 import { FC } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertCircle, Calendar } from "lucide-react";
@@ -18,9 +17,10 @@ import {
 
 interface TimeSeriesAnalysisProps {
   data?: any;
+  uploadComplete?: boolean;
 }
 
-const TimeSeriesAnalysis: FC<TimeSeriesAnalysisProps> = ({ data }) => {
+const TimeSeriesAnalysis: FC<TimeSeriesAnalysisProps> = ({ data, uploadComplete = false }) => {
   // Sample time series data
   const timeSeriesData = data || {
     daily: [

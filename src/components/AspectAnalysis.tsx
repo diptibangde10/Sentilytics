@@ -1,4 +1,3 @@
-
 import { FC } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ThumbsUp, ThumbsDown, AlertCircle, CheckCircle, XCircle } from "lucide-react";
@@ -6,9 +5,10 @@ import { Progress } from "@/components/ui/progress";
 
 interface AspectAnalysisProps {
   data?: any;
+  uploadComplete?: boolean;
 }
 
-const AspectAnalysis: FC<AspectAnalysisProps> = ({ data }) => {
+const AspectAnalysis: FC<AspectAnalysisProps> = ({ data, uploadComplete = false }) => {
   // Sample data for aspect-based sentiment analysis
   const aspectData = data || [
     {
