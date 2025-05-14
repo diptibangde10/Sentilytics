@@ -1,3 +1,4 @@
+
 import { FC } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ThumbsUp, ThumbsDown, AlertCircle, CheckCircle, XCircle } from "lucide-react";
@@ -10,7 +11,7 @@ interface AspectAnalysisProps {
 
 const AspectAnalysis: FC<AspectAnalysisProps> = ({ data, uploadComplete = false }) => {
   // Sample data for aspect-based sentiment analysis
-  const aspectData = data || [
+  const sampleData = [
     {
       aspect: "Product Quality",
       positive: 75,
@@ -47,6 +48,9 @@ const AspectAnalysis: FC<AspectAnalysisProps> = ({ data, uploadComplete = false 
       keywords: ["elegant", "sleek", "beautiful", "stylish"],
     },
   ];
+  
+  // Ensure aspectData is always an array
+  const aspectData = Array.isArray(data) ? data : sampleData;
 
   const getSentimentIcon = (positive: number, negative: number) => {
     if (positive >= 70) return <CheckCircle className="h-5 w-5 text-green-500" />;
