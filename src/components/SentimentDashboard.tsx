@@ -1,15 +1,18 @@
 
 import { FC } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ThumbsUp, ThumbsDown, Minus, TrendingUp, TrendingDown } from "lucide-react";
+import { ThumbsUp, ThumbsDown, Minus, TrendingUp, TrendingDown, MessageCircle } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, ScatterChart, Scatter } from "recharts";
+import { useToast } from "@/hooks/use-toast";
 
 interface SentimentDashboardProps {
   data?: any;
 }
 
 const SentimentDashboard: FC<SentimentDashboardProps> = ({ data }) => {
+  const { toast } = useToast();
+  
   // Sample data for the dashboard
   const sentimentData = data || {
     positive: 65,
@@ -156,6 +159,11 @@ const SentimentDashboard: FC<SentimentDashboardProps> = ({ data }) => {
                 <span>{aspect}</span>
               </div>
             ))}
+            {positiveAspects.length === 0 && (
+              <div className="text-center text-muted-foreground py-4">
+                No positive aspects found
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -172,6 +180,11 @@ const SentimentDashboard: FC<SentimentDashboardProps> = ({ data }) => {
                 <span>{aspect}</span>
               </div>
             ))}
+            {negativeAspects.length === 0 && (
+              <div className="text-center text-muted-foreground py-4">
+                No negative aspects found
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -212,60 +225,71 @@ const SentimentDashboard: FC<SentimentDashboardProps> = ({ data }) => {
 
       <Card className="dashboard-card col-span-full">
         <CardHeader className="pb-2">
-          <CardTitle className="text-lg font-medium">Keyword Cloud</CardTitle>
+          <CardTitle className="text-lg font-medium flex items-center gap-2">
+            <MessageCircle className="h-5 w-5" />
+            Keyword Cloud
+          </CardTitle>
         </CardHeader>
-        <CardContent className="h-[400px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <ScatterChart
-              margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
-            >
-              <Scatter 
-                data={wordCloudData} 
-                fill="#8884d8"
-              >
-                {wordCloudData.map((entry, index) => (
-                  <Cell 
-                    key={`cell-${index}`}
-                    fill={entry.color}
+        <CardContent className="h-[400px] relative">
+          {keywordCloudData.length > 0 ? (
+            <>
+              <ResponsiveContainer width="100%" height="100%">
+                <ScatterChart
+                  margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+                >
+                  <Scatter 
+                    data={wordCloudData} 
+                    fill="#8884d8"
+                  >
+                    {wordCloudData.map((entry, index) => (
+                      <Cell 
+                        key={`cell-${index}`}
+                        fill={entry.color}
+                      />
+                    ))}
+                  </Scatter>
+                  <Tooltip 
+                    content={({ active, payload }) => {
+                      if (active && payload && payload.length) {
+                        const data = payload[0].payload;
+                        return (
+                          <div className="bg-white p-2 border border-gray-200 shadow-md rounded-md">
+                            <p className="font-medium">{data.text}</p>
+                            <p>Count: {data.value}</p>
+                          </div>
+                        );
+                      }
+                      return null;
+                    }}
                   />
+                </ScatterChart>
+              </ResponsiveContainer>
+              <div className="absolute inset-0 pointer-events-none">
+                {wordCloudData.map((entry, index) => (
+                  <div
+                    key={`word-${index}`}
+                    className="absolute"
+                    style={{
+                      left: `${entry.x}%`,
+                      top: `${entry.y}%`,
+                      transform: 'translate(-50%, -50%)',
+                      fontSize: `${entry.z}px`,
+                      color: entry.color,
+                      fontWeight: entry.value > 30 ? 'bold' : 'normal',
+                      textShadow: '0 0 1px rgba(255,255,255,0.5)',
+                      transition: 'all 0.3s ease-in-out',
+                    }}
+                  >
+                    {entry.text}
+                  </div>
                 ))}
-              </Scatter>
-              <Tooltip 
-                content={({ active, payload }) => {
-                  if (active && payload && payload.length) {
-                    const data = payload[0].payload;
-                    return (
-                      <div className="bg-white p-2 border border-gray-200 shadow-md rounded-md">
-                        <p className="font-medium">{data.text}</p>
-                        <p>Count: {data.value}</p>
-                      </div>
-                    );
-                  }
-                  return null;
-                }}
-              />
-            </ScatterChart>
-          </ResponsiveContainer>
-          <div className="absolute inset-0 pointer-events-none">
-            {wordCloudData.map((entry, index) => (
-              <div
-                key={`word-${index}`}
-                className="absolute"
-                style={{
-                  left: `${entry.x}%`,
-                  top: `${entry.y}%`,
-                  transform: 'translate(-50%, -50%)',
-                  fontSize: `${entry.z}px`,
-                  color: entry.color,
-                  fontWeight: entry.value > 30 ? 'bold' : 'normal',
-                  textShadow: '0 0 1px rgba(255,255,255,0.5)',
-                  transition: 'all 0.3s ease-in-out',
-                }}
-              >
-                {entry.text}
               </div>
-            ))}
-          </div>
+            </>
+          ) : (
+            <div className="flex items-center justify-center h-full">
+              <p className="text-center text-muted-foreground">No keyword data available</p>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
