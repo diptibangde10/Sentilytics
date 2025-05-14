@@ -13,6 +13,9 @@ import { Card, CardContent } from "@/components/ui/card";
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [selectedAlgorithm, setSelectedAlgorithm] = useState("naive-bayes");
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [uploadComplete, setUploadComplete] = useState(false);
+  const [analysisData, setAnalysisData] = useState<any>(null);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -32,7 +35,14 @@ const Index = () => {
             <div className="grid gap-8 md:grid-cols-3">
               <div className="md:col-span-1">
                 <div className="slide-up" style={{ animationDuration: '0.6s', animationDelay: '0.1s' }}>
-                  <FileUpload selectedAlgorithm={selectedAlgorithm} />
+                  <FileUpload 
+                    selectedAlgorithm={selectedAlgorithm} 
+                    uploadedFile={uploadedFile}
+                    setUploadedFile={setUploadedFile}
+                    uploadComplete={uploadComplete}
+                    setUploadComplete={setUploadComplete}
+                    setAnalysisData={setAnalysisData}
+                  />
                 </div>
               </div>
               <div className="md:col-span-2">
@@ -45,7 +55,7 @@ const Index = () => {
               </div>
             </div>
             <div className="slide-up" style={{ animationDuration: '1s', animationDelay: '0.3s' }}>
-              <SentimentDashboard />
+              <SentimentDashboard data={analysisData} />
             </div>
           </div>
         );
@@ -64,7 +74,7 @@ const Index = () => {
               />
             </div>
             <div className="slide-up" style={{ animationDuration: '0.8s' }}>
-              <SentimentDashboard />
+              <SentimentDashboard data={analysisData} />
             </div>
           </div>
         );
@@ -77,7 +87,7 @@ const Index = () => {
             </div>
             
             <div className="slide-up" style={{ animationDuration: '0.6s' }}>
-              <AspectAnalysis />
+              <AspectAnalysis data={analysisData} uploadComplete={uploadComplete} />
             </div>
           </div>
         );
@@ -90,7 +100,7 @@ const Index = () => {
             </div>
             
             <div className="slide-up" style={{ animationDuration: '0.6s' }}>
-              <Chatbot />
+              <Chatbot data={analysisData} uploadComplete={uploadComplete} />
             </div>
           </div>
         );
@@ -103,7 +113,7 @@ const Index = () => {
             </div>
             
             <div className="slide-up" style={{ animationDuration: '0.6s' }}>
-              <TimeSeriesAnalysis />
+              <TimeSeriesAnalysis data={analysisData} uploadComplete={uploadComplete} />
             </div>
           </div>
         );
@@ -116,14 +126,14 @@ const Index = () => {
             </div>
             
             <div className="slide-up" style={{ animationDuration: '0.6s' }}>
-              <Recommendations />
+              <Recommendations data={analysisData} uploadComplete={uploadComplete} />
             </div>
           </div>
         );
       default:
         return (
           <div className="slide-up" style={{ animationDuration: '0.6s' }}>
-            <SentimentDashboard />
+            <SentimentDashboard data={analysisData} />
           </div>
         );
     }

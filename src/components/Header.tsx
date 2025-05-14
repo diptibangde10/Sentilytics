@@ -25,15 +25,6 @@ const Header: FC<HeaderProps> = ({ activeTab, setActiveTab, className }) => {
       <div className="container mx-auto px-4 py-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-4">
           <h1 className="text-3xl font-bold text-white">Sentiment Analysis Platform</h1>
-          
-          <div className="flex items-center mt-4 md:mt-0">
-            <Button variant="outline" className="bg-white/10 text-white border-white/20 hover:bg-white/20 mr-2">
-              Sign In
-            </Button>
-            <Button variant="default" className="bg-accent text-primary-foreground hover:bg-accent/90">
-              Get Started
-            </Button>
-          </div>
         </div>
         
         <div className="flex overflow-x-auto pb-2 gap-2 mt-4">
