@@ -1,4 +1,3 @@
-
 import { FC, useState, useEffect } from "react";
 import { Upload, Check, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -39,10 +38,6 @@ const FileUpload: FC<FileUploadProps> = ({
     "random-forest": {
       name: "Random Forest",
       description: "An ensemble learning method that builds multiple decision trees. Handles large feature sets well and avoids overfitting through averaging multiple models."
-    },
-    "lstm": {
-      name: "Long Short-Term Memory (LSTM)",
-      description: "A recurrent neural network architecture designed to recognize patterns in sequences. Excellent for capturing long-term dependencies in text data."
     }
   };
 
@@ -127,12 +122,6 @@ const FileUpload: FC<FileUploadProps> = ({
           ...baseData,
           accuracy: 84 + Math.random() * 7,
           confidenceScores: [0.88, 0.83, 0.91, 0.87, 0.85]
-        };
-      case "lstm":
-        return {
-          ...baseData,
-          accuracy: 89 + Math.random() * 5,
-          confidenceScores: [0.94, 0.89, 0.93, 0.91, 0.88]
         };
       default:
         return baseData;

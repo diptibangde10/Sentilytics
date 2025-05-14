@@ -1,4 +1,3 @@
-
 import { FC } from "react";
 import { Check, Sparkles } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
@@ -40,12 +39,6 @@ const AlgorithmSelector: FC<AlgorithmSelectorProps> = ({
       name: "Random Forest", 
       description: "Ensemble method using multiple decision trees",
       color: "from-green-500 to-green-600"
-    },
-    { 
-      id: "lstm", 
-      name: "Long Short-Term Memory (LSTM)", 
-      description: "Deep learning approach for sequential data",
-      color: "from-amber-500 to-amber-600"
     },
   ];
 
