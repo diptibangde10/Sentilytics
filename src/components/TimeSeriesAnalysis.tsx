@@ -1,3 +1,4 @@
+
 import { FC } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertCircle, Calendar } from "lucide-react";
@@ -21,8 +22,11 @@ interface TimeSeriesAnalysisProps {
 }
 
 const TimeSeriesAnalysis: FC<TimeSeriesAnalysisProps> = ({ data, uploadComplete = false }) => {
+  // Check for time series data from file analysis
+  console.log("Time Series data:", data?.timeSeriesData);
+  
   // Sample time series data
-  const timeSeriesData = data || {
+  const defaultData = {
     daily: [
       { date: "May 1", positive: 62, neutral: 18, negative: 20, volume: 145 },
       { date: "May 2", positive: 65, neutral: 20, negative: 15, volume: 132 },
@@ -49,6 +53,11 @@ const TimeSeriesAnalysis: FC<TimeSeriesAnalysisProps> = ({ data, uploadComplete 
       { date: "May", positive: 65, neutral: 18, negative: 17, volume: 2750 },
     ],
   };
+
+  // Use data from upload or fallback to sample data
+  const timeSeriesData = data?.timeSeriesData || defaultData;
+  
+  const chartData = timeSeriesData.daily || defaultData.daily;
 
   return (
     <div className="grid gap-4">
@@ -77,7 +86,7 @@ const TimeSeriesAnalysis: FC<TimeSeriesAnalysisProps> = ({ data, uploadComplete 
           <div className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart
-                data={timeSeriesData.daily}
+                data={chartData}
                 margin={{
                   top: 20,
                   right: 30,

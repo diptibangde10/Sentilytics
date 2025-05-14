@@ -10,7 +10,7 @@ interface AspectAnalysisProps {
 }
 
 const AspectAnalysis: FC<AspectAnalysisProps> = ({ data, uploadComplete = false }) => {
-  // Sample data for aspect-based sentiment analysis
+  // Use data from props or fallback to sample data
   const sampleData = [
     {
       aspect: "Product Quality",
@@ -49,8 +49,11 @@ const AspectAnalysis: FC<AspectAnalysisProps> = ({ data, uploadComplete = false 
     },
   ];
   
+  // Check if we have aspect analysis data from the upload
+  console.log("Aspect Analysis data:", data?.aspectAnalysis);
+  
   // Ensure aspectData is always an array
-  const aspectData = Array.isArray(data) ? data : sampleData;
+  const aspectData = data?.aspectAnalysis || sampleData;
 
   const getSentimentIcon = (positive: number, negative: number) => {
     if (positive >= 70) return <CheckCircle className="h-5 w-5 text-green-500" />;
@@ -60,7 +63,7 @@ const AspectAnalysis: FC<AspectAnalysisProps> = ({ data, uploadComplete = false 
 
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      {aspectData.map((aspect, index) => (
+      {aspectData.map((aspect: any, index: number) => (
         <Card key={index} className="overflow-hidden hover-scale border gradient-border">
           <CardHeader className="bg-gradient-to-r from-primary/10 via-secondary/5 to-accent/10 pb-2">
             <div className="flex justify-between items-center">

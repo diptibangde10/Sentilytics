@@ -10,7 +10,7 @@ interface RecommendationsProps {
 }
 
 const Recommendations: FC<RecommendationsProps> = ({ data, uploadComplete = false }) => {
-  // Sample recommendations data
+  // Use data passed from parent or fallback to sample data
   const recommendationsData = data || {
     similarProducts: [
       { name: "Product A", similarity: 92, sentimentScore: 85 },
@@ -28,6 +28,12 @@ const Recommendations: FC<RecommendationsProps> = ({ data, uploadComplete = fals
     ],
   };
 
+  // Ensure data structures exist to prevent mapping errors
+  const similarProducts = recommendationsData?.similarProducts || [];
+  const improvements = recommendationsData?.improvements || [];
+
+  console.log("Recommendations data:", recommendationsData);
+
   return (
     <div className="grid gap-4 md:grid-cols-2">
       <Card className="col-span-full md:col-span-1">
@@ -41,7 +47,7 @@ const Recommendations: FC<RecommendationsProps> = ({ data, uploadComplete = fals
           <div className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
-                data={recommendationsData.similarProducts}
+                data={similarProducts}
                 layout="vertical"
                 margin={{
                   top: 20,
@@ -89,7 +95,7 @@ const Recommendations: FC<RecommendationsProps> = ({ data, uploadComplete = fals
           <div className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
-                data={recommendationsData.improvements}
+                data={improvements}
                 layout="vertical"
                 margin={{
                   top: 20,
@@ -112,7 +118,7 @@ const Recommendations: FC<RecommendationsProps> = ({ data, uploadComplete = fals
                   radius={[0, 4, 4, 0]}
                   barSize={20}
                 >
-                  {recommendationsData.improvements && recommendationsData.improvements.map((entry: any, index: number) => (
+                  {improvements && improvements.map((entry: any, index: number) => (
                     <Cell key={`cell-${index}`} fill={index === 0 ? "#f97316" : `hsl(${24 - index * 3}, 90%, ${56 + index * 3}%)`} />
                   ))}
                 </Bar>
