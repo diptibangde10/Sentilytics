@@ -1,3 +1,4 @@
+
 import { FC } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
@@ -111,7 +112,7 @@ const Recommendations: FC<RecommendationsProps> = ({ data, uploadComplete = fals
                   radius={[0, 4, 4, 0]}
                   barSize={20}
                 >
-                  {recommendationsData.improvements.map((entry: any, index: number) => (
+                  {recommendationsData.improvements && recommendationsData.improvements.map((entry: any, index: number) => (
                     <Cell key={`cell-${index}`} fill={index === 0 ? "#f97316" : `hsl(${24 - index * 3}, 90%, ${56 + index * 3}%)`} />
                   ))}
                 </Bar>
