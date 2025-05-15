@@ -130,4 +130,3 @@ export const processQuery = (query: string, data: ChatbotDataContext | null): st
   // Default response if no specific match
   return "I can provide insights about the sentiment analysis data. You can ask about overall sentiment, positive/negative aspects, keywords, trends over time, or specific aspects mentioned in the reviews.";
 };
-

@@ -127,11 +127,11 @@ const generateTrainingResults = (algorithm: string): TrainingResult => {
         ],
         timeSeriesData: {
           daily: [
-            { date: "May 1", positive: 62, neutral: 18, negative: 20, volume: 145 },
-            { date: "May 2", positive: 65, neutral: 20, negative: 15, volume: 132 },
-            { date: "May 3", positive: 60, neutral: 18, negative: 22, volume: 158 },
-            { date: "May 4", positive: 63, neutral: 15, negative: 22, volume: 175 },
-            { date: "May 5", positive: 68, neutral: 17, negative: 15, volume: 162 },
+            { date: "Jul 1", positive: 62, neutral: 18, negative: 20, volume: 145 },
+            { date: "Jul 2", positive: 65, neutral: 20, negative: 15, volume: 132 },
+            { date: "Jul 3", positive: 60, neutral: 18, negative: 22, volume: 158 },
+            { date: "Jul 4", positive: 63, neutral: 15, negative: 22, volume: 175 },
+            { date: "Jul 5", positive: 68, neutral: 17, negative: 15, volume: 162 },
           ]
         },
         aspectAnalysis: [
@@ -179,11 +179,11 @@ const generateTrainingResults = (algorithm: string): TrainingResult => {
         ],
         timeSeriesData: {
           daily: [
-            { date: "May 1", positive: 65, neutral: 15, negative: 20, volume: 155 },
-            { date: "May 2", positive: 68, neutral: 17, negative: 15, volume: 142 },
-            { date: "May 3", positive: 70, neutral: 15, negative: 15, volume: 168 },
-            { date: "May 4", positive: 72, neutral: 13, negative: 15, volume: 185 },
-            { date: "May 5", positive: 75, neutral: 15, negative: 10, volume: 172 },
+            { date: "Jul 1", positive: 65, neutral: 15, negative: 20, volume: 155 },
+            { date: "Jul 2", positive: 68, neutral: 17, negative: 15, volume: 142 },
+            { date: "Jul 3", positive: 70, neutral: 15, negative: 15, volume: 168 },
+            { date: "Jul 4", positive: 72, neutral: 13, negative: 15, volume: 185 },
+            { date: "Jul 5", positive: 75, neutral: 15, negative: 10, volume: 172 },
           ]
         },
         aspectAnalysis: [
@@ -231,11 +231,11 @@ const generateTrainingResults = (algorithm: string): TrainingResult => {
         ],
         timeSeriesData: {
           daily: [
-            { date: "May 1", positive: 64, neutral: 16, negative: 20, volume: 150 },
-            { date: "May 2", positive: 67, neutral: 18, negative: 15, volume: 138 },
-            { date: "May 3", positive: 65, neutral: 20, negative: 15, volume: 162 },
-            { date: "May 4", positive: 69, neutral: 14, negative: 17, volume: 180 },
-            { date: "May 5", positive: 72, neutral: 15, negative: 13, volume: 165 },
+            { date: "Jul 1", positive: 64, neutral: 16, negative: 20, volume: 150 },
+            { date: "Jul 2", positive: 67, neutral: 18, negative: 15, volume: 138 },
+            { date: "Jul 3", positive: 65, neutral: 20, negative: 15, volume: 162 },
+            { date: "Jul 4", positive: 69, neutral: 14, negative: 17, volume: 180 },
+            { date: "Jul 5", positive: 72, neutral: 15, negative: 13, volume: 165 },
           ]
         },
         aspectAnalysis: [

@@ -54,7 +54,7 @@ const SentimentTimeChart: FC<SentimentTimeChartProps> = ({ data = [] }) => {
             <YAxis />
             <Tooltip 
               formatter={(value: any, name: any) => [`${value}%`, name]}
-              labelFormatter={(label) => `Month: ${label}`}
+              labelFormatter={(label) => `Date: ${label}`}
             />
             {['positive', 'neutral', 'negative'].map((entry, index) => (
               <Bar 
