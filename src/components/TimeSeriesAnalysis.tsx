@@ -1,5 +1,5 @@
 
-import { FC } from "react";
+import { FC, useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertCircle, Calendar } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -15,6 +15,7 @@ import {
   Area,
   AreaChart,
 } from "recharts";
+import { useToast } from "@/hooks/use-toast";
 
 interface TimeSeriesAnalysisProps {
   data?: any;
@@ -22,8 +23,9 @@ interface TimeSeriesAnalysisProps {
 }
 
 const TimeSeriesAnalysis: FC<TimeSeriesAnalysisProps> = ({ data, uploadComplete = false }) => {
-  // Check for time series data from file analysis
-  console.log("Time Series data:", data?.timeSeriesData);
+  const { toast } = useToast();
+  const [timePeriod, setTimePeriod] = useState("daily");
+  const [chartData, setChartData] = useState<any[]>([]);
   
   // Sample time series data
   const defaultData = {
@@ -54,10 +56,39 @@ const TimeSeriesAnalysis: FC<TimeSeriesAnalysisProps> = ({ data, uploadComplete 
     ],
   };
 
-  // Use data from upload or fallback to sample data
-  const timeSeriesData = data?.timeSeriesData || defaultData;
-  
-  const chartData = timeSeriesData.daily || defaultData.daily;
+  // Effect to update chart data when time period changes or data is loaded
+  useEffect(() => {
+    // Check for uploaded data first
+    if (uploadComplete && data?.timeSeriesData) {
+      console.log("Using uploaded time series data");
+      
+      // Use the relevant time series data based on selection
+      const timeSeriesData = data.timeSeriesData;
+      
+      if (timeSeriesData.daily && timeSeriesData.daily.length > 0) {
+        setChartData(timeSeriesData.daily);
+        
+        // Notify the user that the chart is updated with real data
+        if (timePeriod !== "daily") {
+          toast({
+            title: "Data Notice",
+            description: "Only daily data is available from your upload. Showing daily time series.",
+          });
+          setTimePeriod("daily");
+        }
+      } else {
+        // Fallback to default data if no daily data in upload
+        setChartData(defaultData[timePeriod as keyof typeof defaultData] || []);
+      }
+    } else {
+      // Use default data when no upload is available
+      setChartData(defaultData[timePeriod as keyof typeof defaultData] || []);
+    }
+  }, [timePeriod, data, uploadComplete, toast]);
+
+  const handleTimePeriodChange = (value: string) => {
+    setTimePeriod(value);
+  };
 
   return (
     <div className="grid gap-4">
@@ -66,7 +97,7 @@ const TimeSeriesAnalysis: FC<TimeSeriesAnalysisProps> = ({ data, uploadComplete 
           <Calendar className="h-5 w-5 text-muted-foreground" />
           <h3 className="text-lg font-medium">Time Series Analysis</h3>
         </div>
-        <Select defaultValue="daily">
+        <Select value={timePeriod} onValueChange={handleTimePeriodChange}>
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Time period" />
           </SelectTrigger>
@@ -140,7 +171,7 @@ const TimeSeriesAnalysis: FC<TimeSeriesAnalysisProps> = ({ data, uploadComplete 
           <div className="h-[250px]">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart
-                data={timeSeriesData.daily}
+                data={chartData}
                 margin={{
                   top: 10,
                   right: 30,
@@ -170,7 +201,9 @@ const TimeSeriesAnalysis: FC<TimeSeriesAnalysisProps> = ({ data, uploadComplete 
           <div className="mt-4 flex items-center gap-2">
             <AlertCircle className="h-4 w-4 text-amber-500" />
             <p className="text-sm text-muted-foreground">
-              Spikes in review volume may indicate product promotions or feature releases.
+              {uploadComplete 
+                ? "This chart shows actual review volume trends from your dataset." 
+                : "Upload your dataset to see actual review volume trends."}
             </p>
           </div>
         </CardContent>
