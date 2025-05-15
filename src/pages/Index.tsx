@@ -10,7 +10,11 @@ import Recommendations from "@/components/Recommendations";
 import TabContent from "@/components/tabs/TabContent";
 import { useToast } from "@/hooks/use-toast";
 
-const Index = () => {
+interface IndexProps {
+  onAnalysisDataUpdate?: (data: any) => void;
+}
+
+const Index = ({ onAnalysisDataUpdate }: IndexProps) => {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("dashboard");
   const [selectedAlgorithm, setSelectedAlgorithm] = useState("naive-bayes");
@@ -22,6 +26,11 @@ const Index = () => {
   const handleAnalysisDataChange = (data: any) => {
     console.log("Analysis data updated:", data);
     setAnalysisData(data);
+    
+    // Update the parent component with the analysis data
+    if (onAnalysisDataUpdate) {
+      onAnalysisDataUpdate(data);
+    }
     
     if (data) {
       toast({
