@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/components/ui/use-toast";
+import { trainModel } from "@/utils/modelTraining";
 
 interface FileUploadProps {
   selectedAlgorithm?: string;
@@ -26,6 +27,7 @@ const FileUpload: FC<FileUploadProps> = ({
   const { toast } = useToast();
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [trainingStage, setTrainingStage] = useState<string>("");
 
   const algorithmInfo = {
     "naive-bayes": {
@@ -49,7 +51,7 @@ const FileUpload: FC<FileUploadProps> = ({
     }
   };
 
-  const handleUpload = () => {
+  const handleUpload = async () => {
     if (!uploadedFile) {
       toast({
         title: "No file selected",
@@ -61,223 +63,49 @@ const FileUpload: FC<FileUploadProps> = ({
 
     setUploading(true);
     setProgress(0);
+    setTrainingStage("Uploading file...");
     
-    // Simulate a file upload with progress
-    let uploadProgress = 0;
-    const interval = setInterval(() => {
-      uploadProgress += 10;
-      setProgress(uploadProgress);
+    try {
+      // Simulate initial file upload
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      setTrainingStage("Training model...");
       
-      if (uploadProgress >= 100) {
-        clearInterval(interval);
-        setUploading(false);
-        setUploadComplete(true);
-        
-        // Generate mock analysis data based on the selected algorithm
-        const mockAnalysisData = generateMockAnalysisData(selectedAlgorithm);
-        console.log("Generated mock analysis data:", mockAnalysisData);
-        setAnalysisData(mockAnalysisData);
-        
-        toast({
-          title: "Upload complete",
-          description: `Successfully uploaded ${uploadedFile.name}`,
-        });
-      }
-    }, 300);
-  };
-
-  // Generate mock analysis data based on the selected algorithm
-  const generateMockAnalysisData = (algorithm: string) => {
-    // Base sentiment data that all algorithms will have
-    const baseData = {
-      sentimentCounts: {
-        positive: Math.floor(Math.random() * 50) + 50,
-        neutral: Math.floor(Math.random() * 30) + 20,
-        negative: Math.floor(Math.random() * 30) + 10
-      },
-      topKeywords: [
-        { keyword: "excellent", count: Math.floor(Math.random() * 50) + 30 },
-        { keyword: "great", count: Math.floor(Math.random() * 50) + 25 },
-        { keyword: "good", count: Math.floor(Math.random() * 40) + 20 },
-        { keyword: "average", count: Math.floor(Math.random() * 30) + 15 },
-        { keyword: "poor", count: Math.floor(Math.random() * 20) + 10 }
-      ],
-      algorithm: algorithm
-    };
-
-    // Algorithm-specific data
-    switch (algorithm) {
-      case "naive-bayes":
-        return {
-          ...baseData,
-          accuracy: 82 + Math.random() * 5,
-          confidenceScores: [0.87, 0.76, 0.92, 0.81, 0.79],
-          // Add recommendations data
-          similarProducts: [
-            { name: "Product A", similarity: 92, sentimentScore: 85 },
-            { name: "Product B", similarity: 88, sentimentScore: 72 },
-            { name: "Product C", similarity: 76, sentimentScore: 90 },
-            { name: "Product D", similarity: 72, sentimentScore: 78 },
-            { name: "Product E", similarity: 68, sentimentScore: 82 },
-          ],
-          improvements: [
-            { aspect: "Price", impact: 38 },
-            { aspect: "Customer Support", impact: 32 },
-            { aspect: "Durability", impact: 25 },
-            { aspect: "Documentation", impact: 18 },
-            { aspect: "Shipping", impact: 12 },
-          ],
-          // Add time series data
-          timeSeriesData: {
-            daily: [
-              { date: "May 1", positive: 62, neutral: 18, negative: 20, volume: 145 },
-              { date: "May 2", positive: 65, neutral: 20, negative: 15, volume: 132 },
-              { date: "May 3", positive: 60, neutral: 18, negative: 22, volume: 158 },
-              { date: "May 4", positive: 63, neutral: 15, negative: 22, volume: 175 },
-              { date: "May 5", positive: 68, neutral: 17, negative: 15, volume: 162 },
-            ]
-          },
-          // Add aspect analysis data
-          aspectAnalysis: [
-            {
-              aspect: "Product Quality",
-              positive: 75,
-              neutral: 15,
-              negative: 10,
-              keywords: ["durable", "well-made", "solid", "premium"],
-            },
-            {
-              aspect: "Price",
-              positive: 30,
-              neutral: 15,
-              negative: 55,
-              keywords: ["expensive", "overpriced", "costly", "high-price"],
-            },
-            {
-              aspect: "Customer Support",
-              positive: 45,
-              neutral: 20,
-              negative: 35,
-              keywords: ["helpful", "responsive", "slow", "unresponsive"],
-            },
-          ]
-        };
-      case "svm":
-        return {
-          ...baseData,
-          accuracy: 86 + Math.random() * 6,
-          confidenceScores: [0.91, 0.84, 0.89, 0.86, 0.82],
-          // Add recommendations data
-          similarProducts: [
-            { name: "Product X", similarity: 94, sentimentScore: 88 },
-            { name: "Product Y", similarity: 89, sentimentScore: 79 },
-            { name: "Product Z", similarity: 82, sentimentScore: 91 },
-            { name: "Product W", similarity: 76, sentimentScore: 85 },
-            { name: "Product V", similarity: 72, sentimentScore: 80 },
-          ],
-          improvements: [
-            { aspect: "User Interface", impact: 42 },
-            { aspect: "Performance", impact: 36 },
-            { aspect: "Battery Life", impact: 28 },
-            { aspect: "Connectivity", impact: 22 },
-            { aspect: "Updates", impact: 16 },
-          ],
-          // Add time series data
-          timeSeriesData: {
-            daily: [
-              { date: "May 1", positive: 65, neutral: 15, negative: 20, volume: 155 },
-              { date: "May 2", positive: 68, neutral: 17, negative: 15, volume: 142 },
-              { date: "May 3", positive: 70, neutral: 15, negative: 15, volume: 168 },
-              { date: "May 4", positive: 72, neutral: 13, negative: 15, volume: 185 },
-              { date: "May 5", positive: 75, neutral: 15, negative: 10, volume: 172 },
-            ]
-          },
-          // Add aspect analysis data
-          aspectAnalysis: [
-            {
-              aspect: "User Experience",
-              positive: 82,
-              neutral: 10,
-              negative: 8,
-              keywords: ["intuitive", "easy-to-use", "seamless", "convenient"],
-            },
-            {
-              aspect: "Design",
-              positive: 90,
-              neutral: 5,
-              negative: 5,
-              keywords: ["elegant", "sleek", "beautiful", "stylish"],
-            },
-            {
-              aspect: "Features",
-              positive: 65,
-              neutral: 25,
-              negative: 10,
-              keywords: ["innovative", "useful", "practical", "helpful"],
-            },
-          ]
-        };
-      case "random-forest":
-        return {
-          ...baseData,
-          accuracy: 84 + Math.random() * 7,
-          confidenceScores: [0.88, 0.83, 0.91, 0.87, 0.85],
-          // Add recommendations data
-          similarProducts: [
-            { name: "Product J", similarity: 91, sentimentScore: 82 },
-            { name: "Product K", similarity: 87, sentimentScore: 75 },
-            { name: "Product L", similarity: 83, sentimentScore: 88 },
-            { name: "Product M", similarity: 78, sentimentScore: 80 },
-            { name: "Product N", similarity: 74, sentimentScore: 85 },
-          ],
-          improvements: [
-            { aspect: "Materials", impact: 40 },
-            { aspect: "Installation", impact: 34 },
-            { aspect: "Instructions", impact: 29 },
-            { aspect: "Warranty", impact: 20 },
-            { aspect: "Packaging", impact: 15 },
-          ],
-          // Add time series data
-          timeSeriesData: {
-            daily: [
-              { date: "May 1", positive: 64, neutral: 16, negative: 20, volume: 150 },
-              { date: "May 2", positive: 67, neutral: 18, negative: 15, volume: 138 },
-              { date: "May 3", positive: 65, neutral: 20, negative: 15, volume: 162 },
-              { date: "May 4", positive: 69, neutral: 14, negative: 17, volume: 180 },
-              { date: "May 5", positive: 72, neutral: 15, negative: 13, volume: 165 },
-            ]
-          },
-          // Add aspect analysis data
-          aspectAnalysis: [
-            {
-              aspect: "Build Quality",
-              positive: 70,
-              neutral: 20,
-              negative: 10,
-              keywords: ["sturdy", "solid", "well-built", "quality"],
-            },
-            {
-              aspect: "Value for Money",
-              positive: 55,
-              neutral: 25,
-              negative: 20,
-              keywords: ["worth it", "reasonable", "expensive", "bargain"],
-            },
-            {
-              aspect: "Longevity",
-              positive: 65,
-              neutral: 20,
-              negative: 15,
-              keywords: ["durable", "lasting", "short-lived", "enduring"],
-            },
-          ]
-        };
-      default:
-        return baseData;
+      // Train the model with the uploaded file
+      const result = await trainModel({
+        algorithm: selectedAlgorithm,
+        file: uploadedFile,
+        onProgress: (currentProgress) => {
+          setProgress(currentProgress);
+          
+          // Update stage based on progress
+          if (currentProgress <= 20) setTrainingStage("Processing data...");
+          else if (currentProgress <= 40) setTrainingStage("Extracting features...");
+          else if (currentProgress <= 70) setTrainingStage("Training model...");
+          else if (currentProgress <= 90) setTrainingStage("Evaluating model...");
+          else setTrainingStage("Generating insights...");
+        }
+      });
+      
+      // Set analysis data with the training result
+      setAnalysisData(result);
+      setUploadComplete(true);
+      
+      toast({
+        title: "Analysis complete",
+        description: `Successfully analyzed ${uploadedFile.name} using ${algorithmInfo[selectedAlgorithm as keyof typeof algorithmInfo].name}`,
+      });
+    } catch (error) {
+      console.error("Training error:", error);
+      
+      toast({
+        title: "Training failed",
+        description: "There was an error training the model. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setUploading(false);
     }
   };
-
-  const currentAlgorithm = algorithmInfo[selectedAlgorithm as keyof typeof algorithmInfo] || algorithmInfo["naive-bayes"];
 
   const handleRemoveFile = () => {
     setUploadedFile(null);
@@ -288,6 +116,8 @@ const FileUpload: FC<FileUploadProps> = ({
       description: "The dataset has been removed"
     });
   };
+
+  const currentAlgorithm = algorithmInfo[selectedAlgorithm as keyof typeof algorithmInfo] || algorithmInfo["naive-bayes"];
 
   return (
     <Card className="overflow-hidden border gradient-border">
@@ -337,7 +167,7 @@ const FileUpload: FC<FileUploadProps> = ({
             <div className="w-full">
               <Progress value={progress} className="h-2 mb-2" />
               <p className="text-xs text-center text-muted-foreground">
-                Uploading... {progress}%
+                {trainingStage} ({Math.round(progress)}%)
               </p>
             </div>
           )}
