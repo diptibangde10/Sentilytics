@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Bot, X } from "lucide-react";
+import { Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import Chatbot from "@/components/Chatbot";
@@ -21,7 +21,7 @@ const FloatingChatbot = ({ data, uploadComplete = false }: FloatingChatbotProps)
       toast({
         title: "No data available",
         description: "Please upload and analyze data first to enable full chatbot functionality.",
-        variant: "warning",
+        variant: "default", // Changed from "warning" to "default"
       });
     }
   };
