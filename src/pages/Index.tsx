@@ -4,7 +4,6 @@ import MainLayout from "@/components/layout/MainLayout";
 import DashboardContent from "@/components/dashboard/DashboardContent";
 import AlgorithmsContent from "@/components/algorithms/AlgorithmsContent";
 import AspectAnalysis from "@/components/AspectAnalysis";
-import Chatbot from "@/components/Chatbot";
 import TimeSeriesAnalysis from "@/components/TimeSeriesAnalysis";
 import Recommendations from "@/components/Recommendations";
 import TabContent from "@/components/tabs/TabContent";
@@ -70,15 +69,6 @@ const Index = ({ onAnalysisDataUpdate }: IndexProps) => {
             description="Identify specific aspects mentioned in reviews"
           >
             <AspectAnalysis data={analysisData} uploadComplete={uploadComplete} />
-          </TabContent>
-        );
-      case "chatbot":
-        return (
-          <TabContent 
-            title="AI Chatbot Assistant"
-            description="Ask questions about your sentiment data"
-          >
-            <Chatbot data={analysisData} uploadComplete={uploadComplete} />
           </TabContent>
         );
       case "time-series":

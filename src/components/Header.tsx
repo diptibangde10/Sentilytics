@@ -1,7 +1,7 @@
 
 import { FC } from "react";
 import { cn } from "@/lib/utils";
-import { BarChart3, MessageCircle, PieChart, Clock, ThumbsUp, Database } from "lucide-react";
+import { BarChart3, PieChart, Clock, ThumbsUp, Database } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface HeaderProps {
@@ -15,7 +15,6 @@ const Header: FC<HeaderProps> = ({ activeTab, setActiveTab, className }) => {
     { id: "dashboard", icon: BarChart3, label: "Dashboard" },
     { id: "algorithms", icon: Database, label: "Algorithms" },
     { id: "aspect-based", icon: ThumbsUp, label: "Aspect Analysis" },
-    { id: "chatbot", icon: MessageCircle, label: "AI Chatbot" },
     { id: "time-series", icon: Clock, label: "Time Series" },
     { id: "recommendations", icon: PieChart, label: "Recommendations" },
   ];
