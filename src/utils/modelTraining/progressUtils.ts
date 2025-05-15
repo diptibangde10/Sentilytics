@@ -1,4 +1,6 @@
 
+import { TrainingProgress } from './types';
+
 // Helper to simulate progress with delays
 export const simulateProgress = async (
   start: number, 
@@ -13,4 +15,19 @@ export const simulateProgress = async (
     onProgress?.(currentProgress);
     await new Promise(resolve => setTimeout(resolve, 300));
   }
+};
+
+// Add the missing updateProgress function
+export const updateProgress = (
+  currentProgress: TrainingProgress,
+  stage: TrainingProgress['stage'],
+  percent: number,
+  message: string
+): TrainingProgress => {
+  return {
+    ...currentProgress,
+    stage,
+    percent,
+    message
+  };
 };

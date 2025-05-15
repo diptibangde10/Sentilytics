@@ -44,6 +44,15 @@ export interface AspectAnalysisItem {
   keywords: string[];
 }
 
+// Add the missing types for the training process
+export type ModelType = 'naive-bayes' | 'random-forest' | 'svm';
+
+export interface TrainingProgress {
+  stage: 'preprocessing' | 'training' | 'evaluation';
+  percent: number;
+  message: string;
+}
+
 export interface TrainingResult {
   sentimentCounts: SentimentCounts;
   topKeywords: KeywordCount[];
