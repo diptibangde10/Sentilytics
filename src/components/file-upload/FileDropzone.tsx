@@ -14,7 +14,7 @@ const FileDropzone: FC<FileDropzoneProps> = ({ handleFileChange }) => {
         id="file-upload"
         className="hidden"
         onChange={handleFileChange}
-        accept=".csv,.txt,.xlsx"
+        accept=".csv,.tsv,.txt,.xlsx"
       />
       <label htmlFor="file-upload" className="cursor-pointer flex flex-col items-center">
         <Upload className="h-12 w-12 text-primary mb-3" />
@@ -22,7 +22,7 @@ const FileDropzone: FC<FileDropzoneProps> = ({ handleFileChange }) => {
           Click to upload or drag and drop
         </p>
         <p className="text-xs text-muted-foreground mt-1">
-          CSV, TXT, XLSX (Max. 10MB)
+          CSV, TSV, TXT, XLSX (Max. 10MB)
         </p>
       </label>
     </div>
