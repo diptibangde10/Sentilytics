@@ -9,13 +9,28 @@ import Chatbot from "@/components/Chatbot";
 import TimeSeriesAnalysis from "@/components/TimeSeriesAnalysis";
 import Recommendations from "@/components/Recommendations";
 import { Card, CardContent } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
 
 const Index = () => {
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("dashboard");
   const [selectedAlgorithm, setSelectedAlgorithm] = useState("naive-bayes");
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [uploadComplete, setUploadComplete] = useState(false);
   const [analysisData, setAnalysisData] = useState<any>(null);
+
+  // Log whenever analysis data changes
+  const handleAnalysisDataChange = (data: any) => {
+    console.log("Analysis data updated:", data);
+    setAnalysisData(data);
+    
+    if (data) {
+      toast({
+        title: "Analysis Ready",
+        description: "All visualization features have been updated with the dataset analysis",
+      });
+    }
+  };
 
   const renderContent = () => {
     switch (activeTab) {
@@ -41,7 +56,7 @@ const Index = () => {
                     setUploadedFile={setUploadedFile}
                     uploadComplete={uploadComplete}
                     setUploadComplete={setUploadComplete}
-                    setAnalysisData={setAnalysisData}
+                    setAnalysisData={handleAnalysisDataChange}
                   />
                 </div>
               </div>

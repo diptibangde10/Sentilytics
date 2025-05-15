@@ -80,8 +80,38 @@ export const useFileUpload = ({
         }
       });
       
-      // Set analysis data with the training result
-      setAnalysisData(result);
+      // Ensure all data points are properly structured for visualization
+      const enhancedData = {
+        ...result,
+        // Ensure dashboard data points are available
+        positive: result.sentimentCounts?.positive || 0,
+        negative: result.sentimentCounts?.negative || 0,
+        neutral: result.sentimentCounts?.neutral || 0,
+        // Ensure most positive/negative aspects are available
+        mostPositiveAspects: result.aspectAnalysis 
+          ? result.aspectAnalysis
+              .filter(aspect => aspect.positive > 60)
+              .map(aspect => aspect.aspect)
+              .slice(0, 3)
+          : [],
+        mostNegativeAspects: result.aspectAnalysis
+          ? result.aspectAnalysis
+              .filter(aspect => aspect.negative > 30)
+              .map(aspect => aspect.aspect)
+              .slice(0, 3)
+          : [],
+        // Ensure time series data has proper structure
+        overTime: result.timeSeriesData?.daily || [],
+        // Ensure keyword cloud data is available
+        keywordCloud: result.topKeywords 
+          ? result.topKeywords.map(kw => ({ text: kw.keyword, value: kw.count }))
+          : [],
+        // Set the algorithm used
+        algorithm: selectedAlgorithm
+      };
+      
+      // Set analysis data with the enhanced training result
+      setAnalysisData(enhancedData);
       setUploadComplete(true);
       
       toast({

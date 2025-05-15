@@ -13,7 +13,7 @@ interface SentimentDashboardProps {
 const SentimentDashboard: FC<SentimentDashboardProps> = ({ data }) => {
   const { toast } = useToast();
   
-  // Sample data for the dashboard
+  // Use data from file analysis or fallback to sample data
   const sentimentData = data || {
     positive: 65,
     negative: 20,
@@ -50,6 +50,9 @@ const SentimentDashboard: FC<SentimentDashboardProps> = ({ data }) => {
   const negativeAspects = sentimentData?.mostNegativeAspects || [];
   const timeSeriesData = sentimentData?.overTime || [];
   const keywordCloudData = sentimentData?.keywordCloud || [];
+  
+  // Log the data to help with debugging
+  console.log("SentimentDashboard received data:", sentimentData);
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
