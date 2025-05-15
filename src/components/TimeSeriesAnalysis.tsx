@@ -1,20 +1,9 @@
-import { FC, useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertCircle, Calendar } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  Area,
-  AreaChart,
-} from "recharts";
-import { useToast } from "@/hooks/use-toast";
+
+import { FC } from "react";
+import TimeSeriesHeader from "./time-series/TimeSeriesHeader";
+import SentimentTrendChart from "./time-series/SentimentTrendChart";
+import ReviewVolumeChart from "./time-series/ReviewVolumeChart";
+import { useTimeSeriesData } from "@/hooks/useTimeSeriesData";
 
 interface TimeSeriesAnalysisProps {
   data?: any;
@@ -22,198 +11,19 @@ interface TimeSeriesAnalysisProps {
 }
 
 const TimeSeriesAnalysis: FC<TimeSeriesAnalysisProps> = ({ data, uploadComplete = false }) => {
-  const { toast } = useToast();
-  const [timePeriod, setTimePeriod] = useState("daily");
-  const [chartData, setChartData] = useState<any[]>([]);
-  
-  // Updated sample time series data with July dates
-  const defaultData = {
-    daily: [
-      { date: "Jul 1", positive: 62, neutral: 18, negative: 20, volume: 145 },
-      { date: "Jul 2", positive: 65, neutral: 20, negative: 15, volume: 132 },
-      { date: "Jul 3", positive: 60, neutral: 18, negative: 22, volume: 158 },
-      { date: "Jul 4", positive: 63, neutral: 15, negative: 22, volume: 175 },
-      { date: "Jul 5", positive: 68, neutral: 17, negative: 15, volume: 162 },
-      { date: "Jul 6", positive: 65, neutral: 15, negative: 20, volume: 148 },
-      { date: "Jul 7", positive: 70, neutral: 13, negative: 17, volume: 166 },
-      { date: "Jul 8", positive: 72, neutral: 15, negative: 13, volume: 187 },
-      { date: "Jul 9", positive: 68, neutral: 18, negative: 14, volume: 154 },
-      { date: "Jul 10", positive: 65, neutral: 20, negative: 15, volume: 142 },
-    ],
-    weekly: [
-      { date: "Week 1 Jul", positive: 63, neutral: 17, negative: 20, volume: 620 },
-      { date: "Week 2 Jul", positive: 66, neutral: 16, negative: 18, volume: 685 },
-      { date: "Week 3 Jul", positive: 70, neutral: 15, negative: 15, volume: 710 },
-      { date: "Week 4 Jul", positive: 67, neutral: 18, negative: 15, volume: 698 },
-    ],
-    monthly: [
-      { date: "Mar", positive: 58, neutral: 22, negative: 20, volume: 2450 },
-      { date: "Apr", positive: 62, neutral: 18, negative: 20, volume: 2680 },
-      { date: "May", positive: 65, neutral: 17, negative: 18, volume: 2820 },
-      { date: "Jun", positive: 68, neutral: 16, negative: 16, volume: 2910 },
-      { date: "Jul", positive: 65, neutral: 18, negative: 17, volume: 2750 },
-    ],
-  };
-
-  // Effect to update chart data when time period changes or data is loaded
-  useEffect(() => {
-    // Check for uploaded data first
-    if (uploadComplete && data?.timeSeriesData) {
-      console.log("Using uploaded time series data");
-      
-      // Use the relevant time series data based on selection
-      const timeSeriesData = data.timeSeriesData;
-      
-      if (timeSeriesData.daily && timeSeriesData.daily.length > 0) {
-        // Make sure we're using the actual dates from the dataset
-        const formattedData = timeSeriesData.daily.map((entry: any) => ({
-          ...entry,
-          // Keep the original date format from the uploaded dataset
-          date: entry.date
-        }));
-        
-        setChartData(formattedData);
-        
-        // Notify the user that the chart is updated with real data
-        if (timePeriod !== "daily") {
-          toast({
-            title: "Data Notice",
-            description: "Only daily data is available from your upload. Showing daily time series.",
-          });
-          setTimePeriod("daily");
-        }
-      } else {
-        // Fallback to default data if no daily data in upload
-        setChartData(defaultData[timePeriod as keyof typeof defaultData] || []);
-      }
-    } else {
-      // Use default data when no upload is available
-      setChartData(defaultData[timePeriod as keyof typeof defaultData] || []);
-    }
-  }, [timePeriod, data, uploadComplete, toast]);
-
-  const handleTimePeriodChange = (value: string) => {
-    setTimePeriod(value);
-  };
+  const { timePeriod, chartData, handleTimePeriodChange } = useTimeSeriesData({ 
+    data, 
+    uploadComplete 
+  });
 
   return (
     <div className="grid gap-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Calendar className="h-5 w-5 text-muted-foreground" />
-          <h3 className="text-lg font-medium">Time Series Analysis</h3>
-        </div>
-        <Select value={timePeriod} onValueChange={handleTimePeriodChange}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Time period" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="daily">Daily</SelectItem>
-            <SelectItem value="weekly">Weekly</SelectItem>
-            <SelectItem value="monthly">Monthly</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-lg font-medium">Sentiment Trend</CardTitle>
-        </CardHeader>
-        <CardContent className="pt-0">
-          <div className="h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart
-                data={chartData}
-                margin={{
-                  top: 20,
-                  right: 30,
-                  left: 0,
-                  bottom: 0,
-                }}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis />
-                <Tooltip 
-                  formatter={(value: any) => [`${value}%`, '']}
-                  labelFormatter={(label) => `Date: ${label}`}
-                />
-                <Legend />
-                <Line
-                  type="monotone"
-                  dataKey="positive"
-                  stroke="#22c55e"
-                  strokeWidth={2}
-                  activeDot={{ r: 8 }}
-                  name="Positive"
-                />
-                <Line
-                  type="monotone"
-                  dataKey="neutral"
-                  stroke="#94a3b8"
-                  strokeWidth={2}
-                  activeDot={{ r: 8 }}
-                  name="Neutral"
-                />
-                <Line
-                  type="monotone"
-                  dataKey="negative"
-                  stroke="#ef4444"
-                  strokeWidth={2}
-                  activeDot={{ r: 8 }}
-                  name="Negative"
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-lg font-medium">Review Volume</CardTitle>
-        </CardHeader>
-        <CardContent className="pt-0">
-          <div className="h-[250px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart
-                data={chartData}
-                margin={{
-                  top: 10,
-                  right: 30,
-                  left: 0,
-                  bottom: 0,
-                }}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis />
-                <Tooltip
-                  formatter={(value: any) => [value, 'Reviews']}
-                  labelFormatter={(label) => `Date: ${label}`}
-                />
-                <Legend />
-                <Area
-                  type="monotone"
-                  dataKey="volume"
-                  stroke="hsl(var(--primary))"
-                  fill="hsl(var(--primary) / 0.2)"
-                  name="Review Volume"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-
-          <div className="mt-4 flex items-center gap-2">
-            <AlertCircle className="h-4 w-4 text-amber-500" />
-            <p className="text-sm text-muted-foreground">
-              {uploadComplete 
-                ? "This chart shows actual review volume trends from your dataset." 
-                : "Upload your dataset to see actual review volume trends."}
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+      <TimeSeriesHeader 
+        timePeriod={timePeriod}
+        onTimePeriodChange={handleTimePeriodChange}
+      />
+      <SentimentTrendChart chartData={chartData} />
+      <ReviewVolumeChart chartData={chartData} uploadComplete={uploadComplete} />
     </div>
   );
 };
