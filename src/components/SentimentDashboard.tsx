@@ -55,7 +55,7 @@ const SentimentDashboard: FC<SentimentDashboardProps> = ({ data }) => {
   console.log("SentimentDashboard received data:", sentimentData);
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       <SentimentOverview 
         positive={sentimentData.positive}
         negative={sentimentData.negative}
@@ -74,9 +74,13 @@ const SentimentDashboard: FC<SentimentDashboardProps> = ({ data }) => {
         title="Negative Aspects"
       />
       
-      <SentimentTimeChart data={timeSeriesData} />
+      <div className="col-span-full">
+        <SentimentTimeChart data={timeSeriesData} />
+      </div>
       
-      <KeywordCloud keywords={keywordCloudData} />
+      <div className="col-span-full">
+        <KeywordCloud keywords={keywordCloudData} />
+      </div>
     </div>
   );
 };
