@@ -14,6 +14,11 @@ interface KeywordCloudProps {
 }
 
 const KeywordCloud: FC<KeywordCloudProps> = ({ keywords = [] }) => {
+  // Calculate the maximum value once for use throughout the component
+  const maxWordValue = keywords.length > 0 
+    ? Math.max(...keywords.map(item => item.value))
+    : 0;
+    
   // Function to get a color for word cloud based on value
   const getWordCloudColor = (value: number) => {
     const maxValue = keywords.length > 0 
@@ -95,7 +100,7 @@ const KeywordCloud: FC<KeywordCloudProps> = ({ keywords = [] }) => {
                       top: `${entry.y}%`,
                       fontSize: `${entry.size}px`,
                       color: entry.color,
-                      fontWeight: entry.value > (maxValue * 0.7) ? 'bold' : 'normal',
+                      fontWeight: entry.value > (maxWordValue * 0.7) ? 'bold' : 'normal',
                       transform: 'translate(-50%, -50%)',
                       textShadow: '0 0 1px rgba(255,255,255,0.7)',
                       zIndex: entry.zIndex,
