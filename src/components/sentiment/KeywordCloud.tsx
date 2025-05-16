@@ -72,6 +72,10 @@ const KeywordCloud: FC<KeywordCloudProps> = ({ keywords = [] }) => {
   };
 
   const wordCloudData = calculateWordLayout();
+  // Calculate max value outside for use in the JSX
+  const maxWordValue = keywords.length > 0
+    ? Math.max(...keywords.map(item => item.value))
+    : 0;
 
   return (
     <Card className="dashboard-card col-span-full">
@@ -95,7 +99,7 @@ const KeywordCloud: FC<KeywordCloudProps> = ({ keywords = [] }) => {
                       top: `${entry.y}%`,
                       fontSize: `${entry.size}px`,
                       color: entry.color,
-                      fontWeight: entry.value > (maxValue * 0.7) ? 'bold' : 'normal',
+                      fontWeight: entry.value > (maxWordValue * 0.7) ? 'bold' : 'normal',
                       transform: 'translate(-50%, -50%)',
                       textShadow: '0 0 1px rgba(255,255,255,0.7)',
                       zIndex: entry.zIndex,
