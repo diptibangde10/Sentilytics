@@ -46,26 +46,6 @@ export const useFileUpload = ({
     }
   };
 
-  // Function to determine sentiment based on keyword
-  const determineSentiment = (keyword: string) => {
-    // Common positive words
-    const positiveWords = ['excellent', 'great', 'good', 'amazing', 'awesome', 'wonderful', 'fantastic', 
-      'satisfied', 'happy', 'quality', 'reliable', 'recommended', 'premium', 'efficient',
-      'innovative', 'user-friendly', 'easy', 'helpful', 'comfortable', 'impressive', 'perfect'];
-      
-    // Common negative words
-    const negativeWords = ['bad', 'poor', 'terrible', 'awful', 'horrible', 'disappointing', 'frustrated',
-      'expensive', 'overpriced', 'difficult', 'complicated', 'broken', 'useless', 'buggy',
-      'disappointing', 'slow', 'frustrating', 'disappointed', 'issue', 'problem', 'fail'];
-      
-    if (positiveWords.includes(keyword.toLowerCase())) {
-      return 'positive';
-    } else if (negativeWords.includes(keyword.toLowerCase())) {
-      return 'negative';
-    }
-    return 'neutral';
-  };
-
   const handleUpload = async () => {
     if (!uploadedFile) {
       toast({
@@ -87,6 +67,7 @@ export const useFileUpload = ({
       
       // Train the model with the uploaded file
       const mockData = Array.from({length: 100}, () => ({})); // Mock data for processing
+      // Fix the error by passing the correct parameters
       const result = await trainModel(
         mockData, 
         selectedAlgorithm as ModelType,
@@ -96,13 +77,12 @@ export const useFileUpload = ({
         }
       );
       
-      // Process keyword cloud data to ensure proper visualization with sentiment
+      // Process keyword cloud data to ensure proper visualization
       const processedKeywords = result.topKeywords 
         ? result.topKeywords
             .map(kw => ({ 
               text: kw.keyword, 
-              value: kw.count + Math.floor(Math.random() * 10), // Add slight variation for visual interest
-              sentiment: determineSentiment(kw.keyword) // Add sentiment for coloring
+              value: kw.count + Math.floor(Math.random() * 10) // Add slight variation for visual interest
             }))
             .sort((a, b) => b.value - a.value) // Sort by value
         : [];
@@ -110,31 +90,18 @@ export const useFileUpload = ({
       // Add more varied keywords if needed for better visualization
       if (processedKeywords.length < 15) {
         const additionalKeywords = [
-          { text: "quality", sentiment: "positive" },
-          { text: "service", sentiment: "positive" },
-          { text: "price", sentiment: "neutral" },
-          { text: "value", sentiment: "positive" },
-          { text: "performance", sentiment: "positive" },
-          { text: "design", sentiment: "positive" },
-          { text: "usability", sentiment: "positive" },
-          { text: "reliability", sentiment: "positive" },
-          { text: "support", sentiment: "neutral" },
-          { text: "experience", sentiment: "positive" },
-          { text: "features", sentiment: "positive" },
-          { text: "satisfaction", sentiment: "positive" },
-          { text: "recommendation", sentiment: "positive" },
-          { text: "improvement", sentiment: "neutral" },
-          { text: "delivery", sentiment: "neutral" }
+          "quality", "service", "price", "value", "performance", 
+          "design", "usability", "reliability", "support", "experience",
+          "features", "satisfaction", "recommendation", "improvement", "delivery"
         ];
         
         // Add only missing keywords
         const existingTexts = processedKeywords.map(k => k.text);
         additionalKeywords.forEach(keyword => {
-          if (!existingTexts.includes(keyword.text)) {
+          if (!existingTexts.includes(keyword)) {
             processedKeywords.push({
-              text: keyword.text,
-              value: 10 + Math.floor(Math.random() * 40),
-              sentiment: keyword.sentiment
+              text: keyword,
+              value: 10 + Math.floor(Math.random() * 40)
             });
           }
         });

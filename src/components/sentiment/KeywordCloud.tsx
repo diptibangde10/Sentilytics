@@ -7,7 +7,6 @@ import { ResponsiveContainer } from "recharts";
 interface KeywordItem {
   text: string;
   value: number;
-  sentiment?: 'positive' | 'negative' | 'neutral'; // Add sentiment property
 }
 
 interface KeywordCloudProps {
@@ -15,23 +14,8 @@ interface KeywordCloudProps {
 }
 
 const KeywordCloud: FC<KeywordCloudProps> = ({ keywords = [] }) => {
-  // Function to get a color for word cloud based on sentiment
-  const getWordCloudColor = (value: number, sentiment?: string) => {
-    // Return color based on sentiment if available
-    if (sentiment) {
-      switch (sentiment) {
-        case 'positive':
-          return '#4ade80'; // Green for positive
-        case 'negative':
-          return '#ea384c'; // Red for negative
-        case 'neutral':
-          return '#aaadb0'; // Gray for neutral
-        default:
-          break;
-      }
-    }
-    
-    // Fallback to value-based coloring if no sentiment is provided
+  // Function to get a color for word cloud based on value
+  const getWordCloudColor = (value: number) => {
     const maxValue = keywords.length > 0 
       ? Math.max(...keywords.map(item => item.value))
       : 0;
@@ -79,8 +63,7 @@ const KeywordCloud: FC<KeywordCloudProps> = ({ keywords = [] }) => {
         size,
         text: item.text,
         value: item.value,
-        sentiment: item.sentiment, // Include sentiment in the data
-        color: getWordCloudColor(item.value, item.sentiment),
+        color: getWordCloudColor(item.value),
         zIndex: Math.floor(item.value / maxValue * 10) // Higher values appear on top
       });
     });
@@ -89,10 +72,6 @@ const KeywordCloud: FC<KeywordCloudProps> = ({ keywords = [] }) => {
   };
 
   const wordCloudData = calculateWordLayout();
-  // Calculate max value outside for use in the JSX
-  const maxWordValue = keywords.length > 0
-    ? Math.max(...keywords.map(item => item.value))
-    : 0;
 
   return (
     <Card className="dashboard-card col-span-full">
@@ -116,14 +95,14 @@ const KeywordCloud: FC<KeywordCloudProps> = ({ keywords = [] }) => {
                       top: `${entry.y}%`,
                       fontSize: `${entry.size}px`,
                       color: entry.color,
-                      fontWeight: entry.value > (maxWordValue * 0.7) ? 'bold' : 'normal',
+                      fontWeight: entry.value > (maxValue * 0.7) ? 'bold' : 'normal',
                       transform: 'translate(-50%, -50%)',
                       textShadow: '0 0 1px rgba(255,255,255,0.7)',
                       zIndex: entry.zIndex,
                       cursor: 'pointer',
                       padding: '0.25rem',
                     }}
-                    title={`${entry.text}: ${entry.value} (${entry.sentiment || 'unknown'})`}
+                    title={`${entry.text}: ${entry.value}`}
                   >
                     {entry.text}
                   </div>
