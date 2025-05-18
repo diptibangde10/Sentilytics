@@ -1,142 +1,92 @@
 
-import { FC, useState, useRef, useEffect } from "react";
+import { FC, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MessageCircle, Info } from "lucide-react";
+import { ResponsiveContainer } from "recharts";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { KeywordCloudProps, KeywordItem } from "@/types/keywordCloud";
-import KeywordDetail from "./KeywordDetail";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip as ChartTooltip,
-  Legend,
-  ChartOptions,
-  ChartData,
-} from 'chart.js';
-import { Chart } from 'react-chartjs-2';
-import 'chartjs-chart-wordcloud';
 
-// Register the required Chart.js components
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  ChartTooltip,
-  Legend
-);
+interface KeywordItem {
+  text: string;
+  value: number;
+}
+
+interface KeywordCloudProps {
+  keywords: KeywordItem[];
+}
 
 const KeywordCloud: FC<KeywordCloudProps> = ({ keywords = [] }) => {
   const [selectedKeyword, setSelectedKeyword] = useState<KeywordItem | null>(null);
-  const chartRef = useRef<ChartJS>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
   
-  // Extract max value for the detail component
-  const maxWordValue = keywords.length > 0
+  // Calculate the maximum value once for use throughout the component
+  const maxWordValue = keywords.length > 0 
     ? Math.max(...keywords.map(item => item.value))
     : 0;
-
-  const handleWordClick = (event: any, elements: any) => {
-    if (elements && elements.length > 0) {
-      const index = elements[0].index;
-      const clickedKeyword = keywords[index];
-      setSelectedKeyword(selectedKeyword?.text === clickedKeyword.text ? null : clickedKeyword);
-    } else {
-      setSelectedKeyword(null);
-    }
+    
+  // Function to get a color for word cloud based on value
+  const getWordCloudColor = (value: number) => {
+    const maxValue = keywords.length > 0 
+      ? Math.max(...keywords.map(item => item.value))
+      : 0;
+    const minValue = keywords.length > 0
+      ? Math.min(...keywords.map(item => item.value))
+      : 0;
+    const normalizedValue = (value - minValue) / (maxValue - minValue || 1);
+    
+    // Color palette from lighter to darker
+    if (normalizedValue > 0.75) return '#8B5CF6'; // Vivid Purple
+    if (normalizedValue > 0.5) return '#9b87f5';  // Primary Purple
+    if (normalizedValue > 0.25) return '#D6BCFA'; // Light Purple
+    return '#E5DEFF';  // Soft Purple
   };
 
-  // Chart.js configuration
-  const chartData: ChartData<'wordCloud'> = {
-    labels: keywords.map(k => k.text),
-    datasets: [
-      {
-        label: 'Keywords',
-        data: keywords.map(k => k.value),
-        color: keywords.map(k => {
-          // Color scaling based on value
-          const normalizedValue = (k.value - 0) / (maxWordValue || 1);
-          if (normalizedValue > 0.85) return '#8B5CF6'; // Vivid Purple
-          if (normalizedValue > 0.7) return '#9b87f5';  // Primary Purple
-          if (normalizedValue > 0.55) return '#7E69AB'; // Secondary Purple
-          if (normalizedValue > 0.4) return '#D6BCFA';  // Light Purple
-          if (normalizedValue > 0.25) return '#E5DEFF'; // Soft Purple
-          return '#F1F0FB';  // Soft Gray
-        }),
-        weight: keywords.map(k => {
-          // Scale the font weight based on value
-          const normalizedValue = (k.value - 0) / (maxWordValue || 1);
-          return normalizedValue > 0.6 ? 'bold' : 'normal';
-        })
-      }
-    ]
-  };
-
-  // Chart.js options
-  const chartOptions: ChartOptions<'wordCloud'> = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: false
-      },
-      tooltip: {
-        enabled: false
-      }
-    },
-    // @ts-ignore - wordCloud type is provided by chartjs-chart-wordcloud plugin
-    wordCloud: {
-      minRotation: -30,
-      maxRotation: 30,
-      spiral: 'archimedean',
-      padding: 5,
-      fontFamily: 'Inter, sans-serif',
-      fontStyle: 'normal',
-      minFontSize: 10,
-      maxFontSize: 60,
-      drawOutOfBound: false,
-      mouseoverEnabled: true,
-      fit: true,
-      drawOutOfBound: false,
-      shape: 'circle',
-      hoverCallback: function(item: any, dimension: any, event: any) {
-        // Add a subtle highlight effect on hover
-        const canvas = chartRef.current?.canvas;
-        if (canvas) {
-          canvas.style.cursor = 'pointer';
-        }
-      }
-    },
-    onClick: handleWordClick
-  };
-
-  // Resize observer to make chart responsive
-  useEffect(() => {
-    if (containerRef.current && chartRef.current) {
-      const resizeObserver = new ResizeObserver(() => {
-        setTimeout(() => {
-          if (chartRef.current) {
-            chartRef.current.resize();
-          }
-        }, 10);
-      });
+  // Calculate word sizes and positions more effectively
+  const calculateWordLayout = () => {
+    if (!keywords.length) return [];
+    
+    const maxValue = Math.max(...keywords.map(item => item.value));
+    const data = [];
+    
+    // Position words in a circular pattern with improved spacing
+    const centerX = 50;
+    const centerY = 50;
+    const radius = 35;
+    
+    // Sort keywords by value for better layout
+    const sortedKeywords = [...keywords].sort((a, b) => b.value - a.value);
+    
+    sortedKeywords.forEach((item, index) => {
+      // Use golden ratio to distribute words more evenly
+      const angle = index * (Math.PI * 2 / sortedKeywords.length);
+      // Vary radius based on index to avoid clustering
+      const radiusFactor = 0.5 + (index % 3) * 0.15;
+      const wordRadius = radius * radiusFactor;
       
-      resizeObserver.observe(containerRef.current);
-      return () => {
-        if (containerRef.current) {
-          resizeObserver.unobserve(containerRef.current);
-        }
-      };
-    }
-  }, []);
+      const x = centerX + Math.cos(angle) * wordRadius;
+      const y = centerY + Math.sin(angle) * wordRadius;
+      const size = (item.value / maxValue) * 24 + 10; // Enhanced size scale
+      
+      data.push({
+        x,
+        y,
+        size,
+        text: item.text,
+        value: item.value,
+        color: getWordCloudColor(item.value),
+        zIndex: Math.floor(item.value / maxValue * 10) // Higher values appear on top
+      });
+    });
+    
+    return data;
+  };
+
+  const wordCloudData = calculateWordLayout();
+
+  const handleKeywordClick = (keyword: KeywordItem) => {
+    setSelectedKeyword(keyword === selectedKeyword ? null : keyword);
+  };
 
   return (
-    <Card className="dashboard-card col-span-full overflow-hidden">
+    <Card className="dashboard-card col-span-full">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg font-medium flex items-center gap-2">
           <MessageCircle className="h-5 w-5" />
@@ -157,25 +107,46 @@ const KeywordCloud: FC<KeywordCloudProps> = ({ keywords = [] }) => {
           </TooltipProvider>
         </CardTitle>
       </CardHeader>
-      <CardContent className="h-[400px] relative p-0 overflow-hidden">
+      <CardContent className="h-[400px] relative">
         {keywords.length > 0 ? (
-          <div ref={containerRef} className="relative w-full h-full">
-            <div className="w-full h-full bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md relative">
-              <Chart
-                ref={chartRef}
-                type="wordCloud"
-                data={chartData}
-                options={chartOptions}
-                className="w-full h-full"
-              />
-              
-              {selectedKeyword && (
-                <KeywordDetail 
-                  selectedKeyword={selectedKeyword} 
-                  maxValue={maxWordValue} 
-                />
-              )}
-            </div>
+          <div className="relative w-full h-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <div className="w-full h-full bg-gradient-to-br from-slate-50 to-slate-100 rounded-md relative">
+                {wordCloudData.map((entry, index) => (
+                  <div
+                    key={`word-${index}`}
+                    className="absolute transition-all duration-700 ease-in-out hover:scale-110"
+                    style={{
+                      left: `${entry.x}%`,
+                      top: `${entry.y}%`,
+                      fontSize: `${entry.size}px`,
+                      color: entry.color,
+                      fontWeight: entry.value > (maxWordValue * 0.7) ? 'bold' : 'normal',
+                      transform: 'translate(-50%, -50%)',
+                      textShadow: '0 0 1px rgba(255,255,255,0.7)',
+                      zIndex: entry.zIndex,
+                      cursor: 'pointer',
+                      padding: '0.25rem',
+                      border: selectedKeyword?.text === entry.text ? '2px solid currentColor' : 'none',
+                      borderRadius: '6px',
+                      backgroundColor: selectedKeyword?.text === entry.text ? 'rgba(255,255,255,0.3)' : 'transparent',
+                    }}
+                    title={`${entry.text}: ${entry.value}`}
+                    onClick={() => handleKeywordClick({text: entry.text, value: entry.value})}
+                  >
+                    {entry.text}
+                  </div>
+                ))}
+                
+                {selectedKeyword && (
+                  <div className="absolute bottom-3 right-3 bg-white/90 shadow-md p-3 rounded-lg border border-slate-200 max-w-xs">
+                    <h4 className="font-medium text-sm">{selectedKeyword.text}</h4>
+                    <p className="text-xs text-muted-foreground">Appears {selectedKeyword.value} times in dataset</p>
+                    <p className="text-xs mt-1">Click again to dismiss</p>
+                  </div>
+                )}
+              </div>
+            </ResponsiveContainer>
           </div>
         ) : (
           <div className="flex items-center justify-center h-full">
