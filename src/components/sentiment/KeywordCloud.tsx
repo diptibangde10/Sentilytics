@@ -1,8 +1,9 @@
 
-import { FC } from "react";
+import { FC, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MessageCircle } from "lucide-react";
+import { MessageCircle, Info } from "lucide-react";
 import { ResponsiveContainer } from "recharts";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface KeywordItem {
   text: string;
@@ -14,6 +15,8 @@ interface KeywordCloudProps {
 }
 
 const KeywordCloud: FC<KeywordCloudProps> = ({ keywords = [] }) => {
+  const [selectedKeyword, setSelectedKeyword] = useState<KeywordItem | null>(null);
+  
   // Calculate the maximum value once for use throughout the component
   const maxWordValue = keywords.length > 0 
     ? Math.max(...keywords.map(item => item.value))
@@ -78,12 +81,30 @@ const KeywordCloud: FC<KeywordCloudProps> = ({ keywords = [] }) => {
 
   const wordCloudData = calculateWordLayout();
 
+  const handleKeywordClick = (keyword: KeywordItem) => {
+    setSelectedKeyword(keyword === selectedKeyword ? null : keyword);
+  };
+
   return (
     <Card className="dashboard-card col-span-full">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg font-medium flex items-center gap-2">
           <MessageCircle className="h-5 w-5" />
           Keyword Cloud
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="max-w-xs">
+                  The keyword cloud shows the most common terms found in your dataset. 
+                  Larger words appear more frequently, and color indicates importance.
+                  Click on a keyword to see its exact count.
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </CardTitle>
       </CardHeader>
       <CardContent className="h-[400px] relative">
@@ -106,12 +127,24 @@ const KeywordCloud: FC<KeywordCloudProps> = ({ keywords = [] }) => {
                       zIndex: entry.zIndex,
                       cursor: 'pointer',
                       padding: '0.25rem',
+                      border: selectedKeyword?.text === entry.text ? '2px solid currentColor' : 'none',
+                      borderRadius: '6px',
+                      backgroundColor: selectedKeyword?.text === entry.text ? 'rgba(255,255,255,0.3)' : 'transparent',
                     }}
                     title={`${entry.text}: ${entry.value}`}
+                    onClick={() => handleKeywordClick({text: entry.text, value: entry.value})}
                   >
                     {entry.text}
                   </div>
                 ))}
+                
+                {selectedKeyword && (
+                  <div className="absolute bottom-3 right-3 bg-white/90 shadow-md p-3 rounded-lg border border-slate-200 max-w-xs">
+                    <h4 className="font-medium text-sm">{selectedKeyword.text}</h4>
+                    <p className="text-xs text-muted-foreground">Appears {selectedKeyword.value} times in dataset</p>
+                    <p className="text-xs mt-1">Click again to dismiss</p>
+                  </div>
+                )}
               </div>
             </ResponsiveContainer>
           </div>

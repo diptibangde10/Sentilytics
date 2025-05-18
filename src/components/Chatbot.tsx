@@ -3,7 +3,7 @@ import { FC, useState, useRef, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { SendHorizontal, Bot, User, Loader2 } from "lucide-react";
+import { SendHorizontal, Bot, User, Loader2, HelpCircle } from "lucide-react";
 import { processQuery, getCurrentTimestamp, ChatbotDataContext } from "@/utils/chatbotUtils";
 import { useToast } from "@/hooks/use-toast";
 
@@ -18,17 +18,26 @@ interface ChatMessage {
   timestamp: string;
 }
 
+const INITIAL_SUGGESTIONS = [
+  "What's the overall sentiment?",
+  "Show me keyword trends",
+  "What are the negative aspects?",
+  "How does sentiment change over time?",
+  "Explain the algorithm used",
+];
+
 const Chatbot: FC<ChatbotProps> = ({ data, uploadComplete = false }) => {
   const { toast } = useToast();
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: "bot",
-      content: "Hello! I'm your AI assistant. How can I help you analyze your sentiment data?",
+      content: "Hello! I'm your AI assistant. I can help analyze your sentiment data and answer questions about the dashboard. What would you like to know?",
       timestamp: getCurrentTimestamp(),
     },
   ]);
   const [inputValue, setInputValue] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Scroll to bottom of messages when new ones are added
@@ -52,6 +61,9 @@ const Chatbot: FC<ChatbotProps> = ({ data, uploadComplete = false }) => {
 
   const handleSendMessage = () => {
     if (inputValue.trim() === "") return;
+
+    // Hide suggestions once user starts chatting
+    setShowSuggestions(false);
 
     // Add user message
     const userMessage: ChatMessage = {
@@ -99,6 +111,22 @@ const Chatbot: FC<ChatbotProps> = ({ data, uploadComplete = false }) => {
         setIsProcessing(false);
       }
     }, 500);
+  };
+
+  const handleSuggestionClick = (suggestion: string) => {
+    setInputValue(suggestion);
+    // Don't automatically send to allow user to modify if desired
+  };
+
+  const handleClearChat = () => {
+    setMessages([
+      {
+        role: "bot",
+        content: "Chat history cleared. How can I help you with your sentiment analysis?",
+        timestamp: getCurrentTimestamp(),
+      },
+    ]);
+    setShowSuggestions(true);
   };
 
   return (
@@ -152,31 +180,71 @@ const Chatbot: FC<ChatbotProps> = ({ data, uploadComplete = false }) => {
                 </div>
               </div>
             )}
+            {showSuggestions && messages.length === 1 && uploadComplete && (
+              <div className="flex items-start gap-2 justify-start">
+                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-white opacity-70">
+                  <HelpCircle size={18} />
+                </div>
+                <div className="bg-muted/50 rounded-lg p-3">
+                  <p className="text-sm text-muted-foreground mb-2">Try asking:</p>
+                  <div className="flex flex-wrap gap-2">
+                    {INITIAL_SUGGESTIONS.map((suggestion, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => handleSuggestionClick(suggestion)}
+                        className="text-xs px-3 py-1.5 rounded-full bg-background border border-border hover:bg-secondary transition-colors"
+                      >
+                        {suggestion}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
             <div ref={messagesEndRef} />
           </div>
-          <div className="relative">
-            <Input
-              value={inputValue}
-              onChange={handleInputChange}
-              onKeyDown={handleKeyDown}
-              placeholder="Ask a question about your data..."
-              className="pr-12"
-              disabled={isProcessing || !uploadComplete}
-            />
-            <Button
-              size="icon"
-              className="absolute right-0 top-0 h-full rounded-l-none"
-              onClick={handleSendMessage}
-              disabled={isProcessing || inputValue.trim() === "" || !uploadComplete}
-            >
-              <SendHorizontal size={18} />
-            </Button>
+          <div className="space-y-3">
+            <div className="relative">
+              <Input
+                value={inputValue}
+                onChange={handleInputChange}
+                onKeyDown={handleKeyDown}
+                placeholder="Ask a question about your data..."
+                className="pr-12"
+                disabled={isProcessing || !uploadComplete}
+              />
+              <Button
+                size="icon"
+                className="absolute right-0 top-0 h-full rounded-l-none"
+                onClick={handleSendMessage}
+                disabled={isProcessing || inputValue.trim() === "" || !uploadComplete}
+              >
+                <SendHorizontal size={18} />
+              </Button>
+            </div>
+            <div className="flex justify-between items-center px-1">
+              {messages.length > 1 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleClearChat}
+                  className="text-xs h-7"
+                >
+                  Clear chat
+                </Button>
+              )}
+              {!uploadComplete && (
+                <p className="text-sm text-muted-foreground text-center flex-1">
+                  Please upload and analyze a dataset to enable the chatbot.
+                </p>
+              )}
+              {uploadComplete && (
+                <p className="text-xs text-muted-foreground ml-auto">
+                  Ask about any dashboard feature or analysis result
+                </p>
+              )}
+            </div>
           </div>
-          {!uploadComplete && (
-            <p className="text-sm text-muted-foreground mt-2 text-center">
-              Please upload and analyze a dataset to enable the chatbot.
-            </p>
-          )}
         </div>
       </CardContent>
     </Card>
