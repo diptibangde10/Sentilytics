@@ -4,6 +4,7 @@ import SentimentOverview from "@/components/sentiment/SentimentOverview";
 import AspectsList from "@/components/sentiment/AspectsList";
 import SentimentTimeChart from "@/components/sentiment/SentimentTimeChart";
 import KeywordCloud from "@/components/sentiment/KeywordCloud";
+import { KeywordItem } from "@/types/keywordCloud";
 import { useToast } from "@/hooks/use-toast";
 
 interface SentimentDashboardProps {
@@ -49,7 +50,7 @@ const SentimentDashboard: FC<SentimentDashboardProps> = ({ data }) => {
   const positiveAspects = sentimentData?.mostPositiveAspects || [];
   const negativeAspects = sentimentData?.mostNegativeAspects || [];
   const timeSeriesData = sentimentData?.overTime || [];
-  const keywordCloudData = sentimentData?.keywordCloud || [];
+  const keywordCloudData = sentimentData?.keywordCloud || [] as KeywordItem[];
   
   // Log the data to help with debugging
   console.log("SentimentDashboard received data:", sentimentData);
