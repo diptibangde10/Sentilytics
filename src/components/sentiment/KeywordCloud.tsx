@@ -1,120 +1,139 @@
 
-import { FC, useState, useEffect, useRef } from "react";
+import { FC, useState, useRef, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MessageCircle, Info } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { KeywordCloudProps, KeywordItem, WordPosition } from "@/types/keywordCloud";
+import { KeywordCloudProps, KeywordItem } from "@/types/keywordCloud";
 import KeywordDetail from "./KeywordDetail";
-import KeywordItemComponent from "./KeywordItem";
-import { 
-  estimateTextDimensions, 
-  findNonOverlappingPosition, 
-  getWordValueRange, 
-  getWordCloudColor 
-} from "@/utils/wordCloudUtils";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip as ChartTooltip,
+  Legend,
+  ChartOptions,
+  ChartData,
+} from 'chart.js';
+import { Chart } from 'react-chartjs-2';
+import 'chartjs-chart-wordcloud';
+
+// Register the required Chart.js components
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  ChartTooltip,
+  Legend
+);
 
 const KeywordCloud: FC<KeywordCloudProps> = ({ keywords = [] }) => {
   const [selectedKeyword, setSelectedKeyword] = useState<KeywordItem | null>(null);
-  const [isAnimating, setIsAnimating] = useState(false);
-  const [wordPositions, setWordPositions] = useState<WordPosition[]>([]);
-  const [wordElements, setWordElements] = useState<JSX.Element[]>([]);
-  const cloudRef = useRef<HTMLDivElement>(null);
+  const chartRef = useRef<ChartJS>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   
-  // Generate the word cloud layout
+  // Extract max value for the detail component
+  const maxWordValue = keywords.length > 0
+    ? Math.max(...keywords.map(item => item.value))
+    : 0;
+
+  const handleWordClick = (event: any, elements: any) => {
+    if (elements && elements.length > 0) {
+      const index = elements[0].index;
+      const clickedKeyword = keywords[index];
+      setSelectedKeyword(selectedKeyword?.text === clickedKeyword.text ? null : clickedKeyword);
+    } else {
+      setSelectedKeyword(null);
+    }
+  };
+
+  // Chart.js configuration
+  const chartData: ChartData<'wordCloud'> = {
+    labels: keywords.map(k => k.text),
+    datasets: [
+      {
+        label: 'Keywords',
+        data: keywords.map(k => k.value),
+        color: keywords.map(k => {
+          // Color scaling based on value
+          const normalizedValue = (k.value - 0) / (maxWordValue || 1);
+          if (normalizedValue > 0.85) return '#8B5CF6'; // Vivid Purple
+          if (normalizedValue > 0.7) return '#9b87f5';  // Primary Purple
+          if (normalizedValue > 0.55) return '#7E69AB'; // Secondary Purple
+          if (normalizedValue > 0.4) return '#D6BCFA';  // Light Purple
+          if (normalizedValue > 0.25) return '#E5DEFF'; // Soft Purple
+          return '#F1F0FB';  // Soft Gray
+        }),
+        weight: keywords.map(k => {
+          // Scale the font weight based on value
+          const normalizedValue = (k.value - 0) / (maxWordValue || 1);
+          return normalizedValue > 0.6 ? 'bold' : 'normal';
+        })
+      }
+    ]
+  };
+
+  // Chart.js options
+  const chartOptions: ChartOptions<'wordCloud'> = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false
+      },
+      tooltip: {
+        enabled: false
+      }
+    },
+    // @ts-ignore - wordCloud type is provided by chartjs-chart-wordcloud plugin
+    wordCloud: {
+      minRotation: -30,
+      maxRotation: 30,
+      spiral: 'archimedean',
+      padding: 5,
+      fontFamily: 'Inter, sans-serif',
+      fontStyle: 'normal',
+      minFontSize: 10,
+      maxFontSize: 60,
+      drawOutOfBound: false,
+      mouseoverEnabled: true,
+      fit: true,
+      drawOutOfBound: false,
+      shape: 'circle',
+      hoverCallback: function(item: any, dimension: any, event: any) {
+        // Add a subtle highlight effect on hover
+        const canvas = chartRef.current?.canvas;
+        if (canvas) {
+          canvas.style.cursor = 'pointer';
+        }
+      }
+    },
+    onClick: handleWordClick
+  };
+
+  // Resize observer to make chart responsive
   useEffect(() => {
-    if (!keywords.length || !cloudRef.current) return;
-    
-    const generateWordCloud = () => {
-      // Sort keywords by value (largest first)
-      const sortedKeywords = [...keywords].sort((a, b) => b.value - a.value);
-      
-      const containerWidth = cloudRef.current?.clientWidth || 600;
-      const containerHeight = cloudRef.current?.clientHeight || 400;
-      const positions: WordPosition[] = [];
-      const elements: JSX.Element[] = [];
-      
-      // Get min/max values for scaling
-      const { minWordValue, maxWordValue } = getWordValueRange(keywords);
-      
-      // Start animation
-      setIsAnimating(true);
-      
-      // Attempt to place each word
-      sortedKeywords.forEach((keyword, index) => {
-        // Calculate font size based on value
-        const normalizedValue = (keyword.value - minWordValue) / (maxWordValue - minWordValue || 1);
-        const fontSize = 10 + Math.sqrt(normalizedValue) * 24; // Non-linear scaling for better distribution
-        
-        // Estimate word dimensions
-        const { width, height } = estimateTextDimensions(keyword.text, fontSize);
-        
-        // Find a non-overlapping position
-        const { x, y, rect } = findNonOverlappingPosition(
-          containerWidth,
-          containerHeight,
-          width,
-          height,
-          positions
-        );
-        
-        // Store the position
-        positions.push(rect);
-        
-        // Create the word element
-        elements.push(
-          <KeywordItemComponent
-            key={`word-${index}`}
-            keyword={keyword}
-            isAnimating={isAnimating}
-            isSelected={selectedKeyword?.text === keyword.text}
-            index={index}
-            position={{ x, y }}
-            fontSize={fontSize}
-            color={getWordCloudColor(keyword.value, minWordValue, maxWordValue)}
-            normalizedValue={normalizedValue}
-            onClick={() => handleKeywordClick(keyword)}
-          />
-        );
+    if (containerRef.current && chartRef.current) {
+      const resizeObserver = new ResizeObserver(() => {
+        setTimeout(() => {
+          if (chartRef.current) {
+            chartRef.current.resize();
+          }
+        }, 10);
       });
       
-      setWordElements(elements);
-      setWordPositions(positions);
-    };
-    
-    // Use ResizeObserver to redraw when container size changes
-    if (cloudRef.current) {
-      const observer = new ResizeObserver(() => {
-        generateWordCloud();
-      });
-      
-      observer.observe(cloudRef.current);
-      generateWordCloud();
-      
+      resizeObserver.observe(containerRef.current);
       return () => {
-        if (cloudRef.current) {
-          observer.unobserve(cloudRef.current);
+        if (containerRef.current) {
+          resizeObserver.unobserve(containerRef.current);
         }
       };
     }
-  }, [keywords, selectedKeyword]);
-
-  // Animation end effect
-  useEffect(() => {
-    if (isAnimating && wordElements.length > 0) {
-      const timer = setTimeout(() => {
-        setIsAnimating(false);
-      }, wordElements.length * 50 + 500);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [isAnimating, wordElements.length]);
-
-  const handleKeywordClick = (keyword: KeywordItem) => {
-    setSelectedKeyword(keyword === selectedKeyword ? null : keyword);
-  };
-
-  // Extract max value for the detail component
-  const { maxWordValue } = getWordValueRange(keywords);
+  }, []);
 
   return (
     <Card className="dashboard-card col-span-full overflow-hidden">
@@ -140,9 +159,15 @@ const KeywordCloud: FC<KeywordCloudProps> = ({ keywords = [] }) => {
       </CardHeader>
       <CardContent className="h-[400px] relative p-0 overflow-hidden">
         {keywords.length > 0 ? (
-          <div className="relative w-full h-full" ref={cloudRef}>
+          <div ref={containerRef} className="relative w-full h-full">
             <div className="w-full h-full bg-gradient-to-br from-blue-50 to-indigo-50 rounded-md relative">
-              {wordElements}
+              <Chart
+                ref={chartRef}
+                type="wordCloud"
+                data={chartData}
+                options={chartOptions}
+                className="w-full h-full"
+              />
               
               {selectedKeyword && (
                 <KeywordDetail 
