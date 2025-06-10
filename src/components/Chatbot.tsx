@@ -1,4 +1,3 @@
-
 import { FC, useState, useRef, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -34,7 +33,7 @@ const Chatbot: FC<ChatbotProps> = ({ data, uploadComplete = false }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: "bot",
-      content: "Hi! Hello there! 👋 How can I assist you today? I'm here to help you analyze your sentiment data and answer any questions about the dashboard features.",
+      content: "Hi!! How can I assist you today and then I'm here to help you analyze your sentiment data and answer any questions about the dashboard features.",
       timestamp: getCurrentTimestamp(),
     },
   ]);
@@ -125,7 +124,7 @@ const Chatbot: FC<ChatbotProps> = ({ data, uploadComplete = false }) => {
     setMessages([
       {
         role: "bot",
-        content: "Hi! Hello there! 👋 How can I assist you today? I'm here to help you analyze your sentiment data and answer any questions about the dashboard features.",
+        content: "Hi!! How can I assist you today and then I'm here to help you analyze your sentiment data and answer any questions about the dashboard features.",
         timestamp: getCurrentTimestamp(),
       },
     ]);
