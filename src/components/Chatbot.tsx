@@ -1,3 +1,4 @@
+
 import { FC, useState, useRef, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -135,7 +136,7 @@ const Chatbot: FC<ChatbotProps> = ({ data, uploadComplete = false }) => {
     <Card className="border gradient-border">
       <CardContent className="p-6">
         <div className="flex flex-col h-[500px]">
-          <div className="flex-1 overflow-y-auto mb-4 space-y-4 pr-2">
+          <div className="flex-1 overflow-y-auto mb-4 space-y-4 pr-2 pt-2">
             {messages.map((message, index) => (
               <div
                 key={index}
@@ -144,7 +145,7 @@ const Chatbot: FC<ChatbotProps> = ({ data, uploadComplete = false }) => {
                 }`}
               >
                 {message.role === "bot" && (
-                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-white">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-white flex-shrink-0">
                     <Bot size={18} />
                   </div>
                 )}
@@ -155,9 +156,9 @@ const Chatbot: FC<ChatbotProps> = ({ data, uploadComplete = false }) => {
                       : "bg-muted"
                   }`}
                 >
-                  <p className="whitespace-pre-wrap">{message.content}</p>
+                  <p className="whitespace-pre-wrap text-sm leading-relaxed">{message.content}</p>
                   <div
-                    className={`text-xs mt-1 ${
+                    className={`text-xs mt-2 ${
                       message.role === "user" ? "text-primary-foreground/70" : "text-muted-foreground"
                     }`}
                   >
@@ -165,7 +166,7 @@ const Chatbot: FC<ChatbotProps> = ({ data, uploadComplete = false }) => {
                   </div>
                 </div>
                 {message.role === "user" && (
-                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-foreground text-background">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-foreground text-background flex-shrink-0">
                     <User size={18} />
                   </div>
                 )}
@@ -173,7 +174,7 @@ const Chatbot: FC<ChatbotProps> = ({ data, uploadComplete = false }) => {
             ))}
             {isProcessing && (
               <div className="flex items-start gap-2 justify-start">
-                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-white">
+                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-white flex-shrink-0">
                   <Bot size={18} />
                 </div>
                 <div className="bg-muted rounded-lg p-3 flex items-center">
@@ -184,7 +185,7 @@ const Chatbot: FC<ChatbotProps> = ({ data, uploadComplete = false }) => {
             )}
             {showSuggestions && messages.length === 1 && (
               <div className="flex items-start gap-2 justify-start">
-                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-white opacity-70">
+                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-white opacity-70 flex-shrink-0">
                   <HelpCircle size={18} />
                 </div>
                 <div className="bg-muted/50 rounded-lg p-3">
