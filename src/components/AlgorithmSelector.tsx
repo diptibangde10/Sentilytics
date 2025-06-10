@@ -1,3 +1,4 @@
+
 import { FC } from "react";
 import { Check, Sparkles } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
@@ -18,7 +19,7 @@ const AlgorithmSelector: FC<AlgorithmSelectorProps> = ({
 }) => {
   const { toast } = useToast();
   const [selectedAlgorithms, setSelectedAlgorithms] = useState<string[]>([selectedAlgorithm]);
-  const [results, setResults] = useState<Record<string, { accuracy: number; precision: number; recall: number }>>({});
+  const [results, setResults] = useState<Record<string, { accuracy: number; precision: number; recall: number; f1Score: number; total: number }>>({});
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const algorithms = [
@@ -70,14 +71,22 @@ const AlgorithmSelector: FC<AlgorithmSelectorProps> = ({
     
     // Simulate analysis process for selected algorithms
     setTimeout(() => {
-      const newResults: Record<string, { accuracy: number; precision: number; recall: number }> = {};
+      const newResults: Record<string, { accuracy: number; precision: number; recall: number; f1Score: number; total: number }> = {};
       
       selectedAlgorithms.forEach(algorithmId => {
         // Generate mock results
+        const accuracy = Math.round((0.7 + Math.random() * 0.25) * 100) / 100;
+        const precision = Math.round((0.65 + Math.random() * 0.3) * 100) / 100;
+        const recall = Math.round((0.6 + Math.random() * 0.35) * 100) / 100;
+        const f1Score = Math.round((2 * precision * recall / (precision + recall)) * 100) / 100;
+        const total = Math.floor(Math.random() * 500) + 100; // Random total between 100-600
+        
         newResults[algorithmId] = {
-          accuracy: Math.round((0.7 + Math.random() * 0.25) * 100) / 100,
-          precision: Math.round((0.65 + Math.random() * 0.3) * 100) / 100,
-          recall: Math.round((0.6 + Math.random() * 0.35) * 100) / 100
+          accuracy,
+          precision,
+          recall,
+          f1Score,
+          total
         };
       });
       
@@ -172,6 +181,14 @@ const AlgorithmSelector: FC<AlgorithmSelectorProps> = ({
                       <div className="flex justify-between">
                         <dt>Recall</dt>
                         <dd className="font-mono font-medium">{metrics.recall.toFixed(2)}</dd>
+                      </div>
+                      <div className="flex justify-between">
+                        <dt>F1-Score</dt>
+                        <dd className="font-mono font-medium">{metrics.f1Score.toFixed(2)}</dd>
+                      </div>
+                      <div className="flex justify-between pt-1 border-t border-muted">
+                        <dt className="font-medium">Total</dt>
+                        <dd className="font-mono font-medium">{metrics.total}</dd>
                       </div>
                     </dl>
                   </Card>
