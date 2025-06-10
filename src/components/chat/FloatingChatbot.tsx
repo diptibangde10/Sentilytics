@@ -76,19 +76,9 @@ const FloatingChatbot = ({ data, uploadComplete = false }: FloatingChatbotProps)
       <Dialog open={isOpen} onOpenChange={handleOpenChange}>
         <DialogContent className="sm:max-w-[500px] h-[600px] flex flex-col p-0">
           <DialogHeader className="p-6 pb-0">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <Bot className="mr-2 h-5 w-5" />
-                <DialogTitle>AI Assistant</DialogTitle>
-              </div>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-8 w-8" 
-                onClick={() => setIsOpen(false)}
-              >
-                <X className="h-4 w-4" />
-              </Button>
+            <div className="flex items-center">
+              <Bot className="mr-2 h-5 w-5" />
+              <DialogTitle>AI Assistant</DialogTitle>
             </div>
             <DialogDescription className="text-xs mt-1 text-muted-foreground">
               Ask questions about your sentiment analysis data and dashboard features

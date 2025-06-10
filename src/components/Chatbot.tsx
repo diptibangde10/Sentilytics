@@ -18,12 +18,15 @@ interface ChatMessage {
   timestamp: string;
 }
 
-const INITIAL_SUGGESTIONS = [
+const SUGGESTED_QUESTIONS = [
   "What's the overall sentiment?",
   "Show me keyword trends",
   "What are the negative aspects?",
   "How does sentiment change over time?",
-  "Explain the algorithm used",
+  "What are people saying about quality?",
+  "Which aspects need improvement?",
+  "What's the review volume trend?",
+  "Explain the analysis results"
 ];
 
 const Chatbot: FC<ChatbotProps> = ({ data, uploadComplete = false }) => {
@@ -31,7 +34,7 @@ const Chatbot: FC<ChatbotProps> = ({ data, uploadComplete = false }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: "bot",
-      content: "Hello! I'm your AI assistant. I can help analyze your sentiment data and answer questions about the dashboard. What would you like to know?",
+      content: "Hi! Hello there! 👋 How can I assist you today? I'm here to help you analyze your sentiment data and answer any questions about the dashboard features.",
       timestamp: getCurrentTimestamp(),
     },
   ]);
@@ -122,7 +125,7 @@ const Chatbot: FC<ChatbotProps> = ({ data, uploadComplete = false }) => {
     setMessages([
       {
         role: "bot",
-        content: "Chat history cleared. How can I help you with your sentiment analysis?",
+        content: "Hi! Hello there! 👋 How can I assist you today? I'm here to help you analyze your sentiment data and answer any questions about the dashboard features.",
         timestamp: getCurrentTimestamp(),
       },
     ]);
@@ -180,19 +183,21 @@ const Chatbot: FC<ChatbotProps> = ({ data, uploadComplete = false }) => {
                 </div>
               </div>
             )}
-            {showSuggestions && messages.length === 1 && uploadComplete && (
+            {showSuggestions && messages.length === 1 && (
               <div className="flex items-start gap-2 justify-start">
                 <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-white opacity-70">
                   <HelpCircle size={18} />
                 </div>
                 <div className="bg-muted/50 rounded-lg p-3">
-                  <p className="text-sm text-muted-foreground mb-2">Try asking:</p>
-                  <div className="flex flex-wrap gap-2">
-                    {INITIAL_SUGGESTIONS.map((suggestion, idx) => (
+                  <p className="text-sm text-muted-foreground mb-2">
+                    {uploadComplete ? "Try asking:" : "You can ask questions like:"}
+                  </p>
+                  <div className="grid grid-cols-1 gap-2">
+                    {SUGGESTED_QUESTIONS.map((suggestion, idx) => (
                       <button
                         key={idx}
                         onClick={() => handleSuggestionClick(suggestion)}
-                        className="text-xs px-3 py-1.5 rounded-full bg-background border border-border hover:bg-secondary transition-colors"
+                        className="text-xs px-3 py-2 rounded-md bg-background border border-border hover:bg-secondary transition-colors text-left"
                       >
                         {suggestion}
                       </button>
@@ -211,13 +216,13 @@ const Chatbot: FC<ChatbotProps> = ({ data, uploadComplete = false }) => {
                 onKeyDown={handleKeyDown}
                 placeholder="Ask a question about your data..."
                 className="pr-12"
-                disabled={isProcessing || !uploadComplete}
+                disabled={isProcessing}
               />
               <Button
                 size="icon"
                 className="absolute right-0 top-0 h-full rounded-l-none"
                 onClick={handleSendMessage}
-                disabled={isProcessing || inputValue.trim() === "" || !uploadComplete}
+                disabled={isProcessing || inputValue.trim() === ""}
               >
                 <SendHorizontal size={18} />
               </Button>
@@ -235,7 +240,7 @@ const Chatbot: FC<ChatbotProps> = ({ data, uploadComplete = false }) => {
               )}
               {!uploadComplete && (
                 <p className="text-sm text-muted-foreground text-center flex-1">
-                  Please upload and analyze a dataset to enable the chatbot.
+                  Upload and analyze a dataset to get personalized insights.
                 </p>
               )}
               {uploadComplete && (
