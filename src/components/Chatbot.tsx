@@ -2,36 +2,17 @@
 import { FC, useState, useRef, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { SendHorizontal, Bot, User, Loader2, HelpCircle } from "lucide-react";
 import { processQuery, getCurrentTimestamp, ChatbotDataContext } from "@/utils/chatbotUtils";
 import { useToast } from "@/hooks/use-toast";
-
-interface ChatbotProps {
-  data?: ChatbotDataContext | null;
-  uploadComplete?: boolean;
-}
-
-interface ChatMessage {
-  role: "bot" | "user";
-  content: string;
-  timestamp: string;
-}
-
-const SUGGESTED_QUESTIONS = [
-  "What's the overall sentiment?",
-  "Show me keyword trends",
-  "What are the negative aspects?",
-  "How does sentiment change over time?",
-  "What are people saying about quality?",
-  "Which aspects need improvement?",
-  "What's the review volume trend?",
-  "Explain the analysis results"
-];
+import { ChatMessage as ChatMessageType, ChatbotProps } from "./chat/types";
+import ChatMessage from "./chat/ChatMessage";
+import SuggestedQuestions from "./chat/SuggestedQuestions";
+import ChatInput from "./chat/ChatInput";
+import LoadingMessage from "./chat/LoadingMessage";
 
 const Chatbot: FC<ChatbotProps> = ({ data, uploadComplete = false }) => {
   const { toast } = useToast();
-  const [messages, setMessages] = useState<ChatMessage[]>([
+  const [messages, setMessages] = useState<ChatMessageType[]>([
     {
       role: "bot",
       content: "Hi!! How can I assist you today and then I'm here to help you analyze your sentiment data and answer any questions about the dashboard features.",
@@ -69,7 +50,7 @@ const Chatbot: FC<ChatbotProps> = ({ data, uploadComplete = false }) => {
     setShowSuggestions(false);
 
     // Add user message
-    const userMessage: ChatMessage = {
+    const userMessage: ChatMessageType = {
       role: "user",
       content: inputValue,
       timestamp: getCurrentTimestamp(),
@@ -86,7 +67,7 @@ const Chatbot: FC<ChatbotProps> = ({ data, uploadComplete = false }) => {
         const botResponse = processQuery(userMessage.content, data || null);
         
         // Add bot response
-        const botMessage: ChatMessage = {
+        const botMessage: ChatMessageType = {
           role: "bot",
           content: botResponse,
           timestamp: getCurrentTimestamp(),
@@ -97,7 +78,7 @@ const Chatbot: FC<ChatbotProps> = ({ data, uploadComplete = false }) => {
         console.error("Error processing query:", error);
         
         // Add error message from bot
-        const errorMessage: ChatMessage = {
+        const errorMessage: ChatMessageType = {
           role: "bot",
           content: "I'm sorry, I encountered an error while processing your query. Please try again.",
           timestamp: getCurrentTimestamp(),
@@ -138,95 +119,25 @@ const Chatbot: FC<ChatbotProps> = ({ data, uploadComplete = false }) => {
         <div className="flex flex-col h-[500px]">
           <div className="flex-1 overflow-y-auto mb-4 space-y-4 pr-2 pt-2">
             {messages.map((message, index) => (
-              <div
-                key={index}
-                className={`flex items-start gap-2 ${
-                  message.role === "user" ? "justify-end" : "justify-start"
-                }`}
-              >
-                {message.role === "bot" && (
-                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-white flex-shrink-0">
-                    <Bot size={18} />
-                  </div>
-                )}
-                <div
-                  className={`max-w-[75%] rounded-lg p-3 ${
-                    message.role === "user"
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted"
-                  }`}
-                >
-                  <p className="whitespace-pre-wrap text-sm leading-relaxed">{message.content}</p>
-                  <div
-                    className={`text-xs mt-2 ${
-                      message.role === "user" ? "text-primary-foreground/70" : "text-muted-foreground"
-                    }`}
-                  >
-                    {message.timestamp}
-                  </div>
-                </div>
-                {message.role === "user" && (
-                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-foreground text-background flex-shrink-0">
-                    <User size={18} />
-                  </div>
-                )}
-              </div>
+              <ChatMessage key={index} message={message} />
             ))}
-            {isProcessing && (
-              <div className="flex items-start gap-2 justify-start">
-                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-white flex-shrink-0">
-                  <Bot size={18} />
-                </div>
-                <div className="bg-muted rounded-lg p-3 flex items-center">
-                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  <span className="text-sm">Processing...</span>
-                </div>
-              </div>
-            )}
+            {isProcessing && <LoadingMessage />}
             {showSuggestions && messages.length === 1 && (
-              <div className="flex items-start gap-2 justify-start">
-                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-white opacity-70 flex-shrink-0">
-                  <HelpCircle size={18} />
-                </div>
-                <div className="bg-muted/50 rounded-lg p-3">
-                  <p className="text-sm text-muted-foreground mb-2">
-                    {uploadComplete ? "Try asking:" : "You can ask questions like:"}
-                  </p>
-                  <div className="grid grid-cols-1 gap-2">
-                    {SUGGESTED_QUESTIONS.map((suggestion, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => handleSuggestionClick(suggestion)}
-                        className="text-xs px-3 py-2 rounded-md bg-background border border-border hover:bg-secondary transition-colors text-left"
-                      >
-                        {suggestion}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
+              <SuggestedQuestions 
+                uploadComplete={uploadComplete}
+                onSuggestionClick={handleSuggestionClick}
+              />
             )}
             <div ref={messagesEndRef} />
           </div>
           <div className="space-y-3">
-            <div className="relative">
-              <Input
-                value={inputValue}
-                onChange={handleInputChange}
-                onKeyDown={handleKeyDown}
-                placeholder="Ask a question about your data..."
-                className="pr-12"
-                disabled={isProcessing}
-              />
-              <Button
-                size="icon"
-                className="absolute right-0 top-0 h-full rounded-l-none"
-                onClick={handleSendMessage}
-                disabled={isProcessing || inputValue.trim() === ""}
-              >
-                <SendHorizontal size={18} />
-              </Button>
-            </div>
+            <ChatInput
+              inputValue={inputValue}
+              isProcessing={isProcessing}
+              onInputChange={handleInputChange}
+              onKeyDown={handleKeyDown}
+              onSendMessage={handleSendMessage}
+            />
             <div className="flex justify-between items-center px-1">
               {messages.length > 1 && (
                 <Button
