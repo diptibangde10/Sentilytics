@@ -1,65 +1,45 @@
-Here is your **final `README.md`** file content, cleaned and tailored to run the project in VS Code:
+Sentilytics
 
----
+Sentilytics is a modern web app for sentiment analysis of product reviews, built using React, TypeScript, Vite, and Tailwind CSS.
+It provides a smooth, fast, and scalable way to analyze and visualize customer feedback.
 
-````markdown
-# Welcome to Your Project
+✅ Requirements
 
-## ✅ Requirements
+Make sure you have the following installed before starting:
 
-Before starting, make sure you have the following installed:
+Node.js (v18 or higher) and npm
 
-- **Node.js** and **npm**
-  - Recommended: Install using **nvm (Node Version Manager)**  
-    👉 [Install nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-- **Visual Studio Code (VS Code)** or any preferred code editor
+Recommended: Install via nvm
 
----
+Visual Studio Code (VS Code) or another preferred editor
 
-## 🚀 How to Run This Project in VS Code
+🚀 Run Locally
+1. Clone the Repository
+git clone https://github.com/YOUR-GITHUB-USERNAME/sentilytics.git
+cd sentilytics
 
-Follow these steps:
+2. Install Dependencies
+npm install
 
-1. **Clone the repository**
-   ```sh
-   git clone <YOUR_GIT_URL>
-````
+3. Start the Development Server
+npm run dev
 
-2. **Navigate to the project directory**
 
-   ```sh
-   cd <YOUR_PROJECT_NAME>
-   ```
+After running the above command, the terminal will display a URL (e.g., http://localhost:5173).
+Open this URL in your browser to view the app.
 
-3. **Install project dependencies**
+🛠 Tech Stack
 
-   ```sh
-   npm install
-   ```
+React – UI library
 
-4. **Start the development server**
+TypeScript – Strongly typed JavaScript
 
-   ```sh
-   npm run dev
-   ```
+Vite – Fast development and build tool
 
-5. **Open the project in your browser**
-   After running the above command, the terminal will display a URL (e.g. `http://localhost:5173`).
-   Open this URL in your browser to view the app.
+Tailwind CSS – Utility-first styling
 
----
+shadcn/ui – Accessible headless UI components
 
-## 🛠 Technologies Used
+📜 License
 
-* **Vite** – Fast build tool and dev server
-* **TypeScript** – Typed superset of JavaScript
-* **React** – UI library
-* **shadcn-ui** – Headless UI components
-* **Tailwind CSS** – Utility-first CSS framework
-
-```
-
----
-
-Let me know if you want to add sections like **Project Features**, **Folder Structure**, or **Deployment Instructions**!
-```
+This project is licensed under the MIT License
